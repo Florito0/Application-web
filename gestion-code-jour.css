@@ -1,0 +1,193 @@
+/* CSS extrait de gestion-codes-jour.html */
+.year-month-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: linear-gradient(135deg, #1c2526 0%, #2a3b4c 100%);
+    overflow-x: auto;
+    position: relative;
+}
+
+.year-select-btn {
+    padding: 5px 15px;
+    background: #444;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    font-size: 14px;
+    position: relative;
+}
+
+.year-select-btn:hover {
+    background: #555;
+    box-shadow: 0 0 10px #9733EE, 0 0 5px #00D4FF;
+}
+
+.year-select-btn:after {
+    content: ' ▼';
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.year-dropdown {
+    display: none;
+    position: absolute;
+    background: #2c2c2c;
+    border: 1px solid #333;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    min-width: 100px;
+    top: 100%;
+    left: 0;
+}
+
+.year-option {
+    padding: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.year-option:hover {
+    background: #444;
+}
+
+.month-btn {
+    padding: 5px 10px;
+    background: #444;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.month-btn:hover {
+    background: #555;
+    box-shadow: 0 0 10px #9733EE, 0 0 5px #00D4FF;
+}
+
+.month-btn.active {
+    background: linear-gradient(to right, #9733EE, #DA22FF);
+}
+
+.calendar {
+    padding: 20px;
+}
+
+.week-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.day-cell {
+    padding: 15px;
+    background: #2c2c2c;
+    border-radius: 8px;
+    text-align: center;
+    min-height: 80px;
+}
+
+.day-cell:hover {
+    box-shadow: 0 0 5px #00D4FF;
+}
+
+.day-cell.today {
+    border: 2px solid #FF00FF;
+}
+
+.day-cell input {
+    width: 100%;
+    padding: 5px;
+    background: #333;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.day-cell input:focus {
+    background: #444;
+    box-shadow: 0 0 5px #00D4FF;
+    outline: none;
+}
+
+.controls {
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.generate-label {
+    font-size: 16px;
+    margin-right: 10px;
+    cursor: default;
+}
+
+.generate-option {
+    padding: 8px 15px;
+    background: #444;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-left: 5px;
+}
+
+.generate-option:hover {
+    background: #555;
+    box-shadow: 0 0 10px #9733EE, 0 0 5px #00D4FF;
+}
+
+.generate-option.active {
+    background: linear-gradient(to right, #9733EE, #DA22FF);
+}
+
+.export-btn {
+    padding: 10px 20px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: box-shadow 0.3s;
+    background: #444;
+}
+
+.export-btn:hover {
+    box-shadow: 0 0 10px #9733EE, 0 0 5px #00D4FF;
+}
+
+.controls .save-btn {
+    /* On utilise les mêmes dimensions que les autres boutons */
+    padding: 8px 15px;
+    font-size: 14px;
+    margin-left: 5px; /* Pour un espacement identique */
+    border-radius: 4px; /* Harmonisé avec les autres */
+
+    /* On garde ton style unique */
+    background: linear-gradient(to right, #9733EE, #DA22FF);
+    color: white;
+    border: 1px solid #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow 0.3s, background-color 0.3s;
+}
+
+.controls .save-btn:hover {
+    background: linear-gradient(to right, #ad48ff, #e83eff);
+    box-shadow: 0 0 10px #9733EE, 0 0 5px #00D4FF;
+}
+
+.section-header {
+    margin-bottom: 30px; /* Vous pouvez ajuster cette valeur (ex: 20px) */
+}
