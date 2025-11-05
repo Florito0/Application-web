@@ -1,0 +1,637 @@
+#gestion-capacite .container {
+    max-width: 750px; /* 600px + 25% = 750px */
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#gestion-capacite .header {
+    /* 1. Définit le bon fond et annule le dégradé de l'autre fichier */
+    background: #2c2c2c;
+
+    /* 2. Annule l'ombre portée qui vient de gestion-horaires.css */
+    box-shadow: none;
+
+    /* 3. Arrondit les coins pour correspondre au conteneur parent */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+
+    /* Vos autres styles qui sont corrects */
+    padding: 15px;
+    text-align: center;
+}
+
+#gestion-capacite h1 {
+    font-size: clamp(18px, 5vw, 24px);
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+#gestion-capacite .subtitle {
+    font-size: clamp(14px, 3vw, 16px);
+    color: #b3b3b3;
+    margin-bottom: 20;
+}
+
+/* Affichage de la capacité */
+#gestion-capacite .capacity-display {
+    padding: 20px;
+    text-align: center;
+}
+
+#gestion-capacite .current-capacity {
+    font-size: clamp(32px, 10vw, 48px);
+    font-weight: 700;
+    margin: 15px 0;
+}
+
+#gestion-capacite .capacity-bar {
+    width: 90%;
+    max-width: 500px; /* 400px + 25% = 500px */
+    height: 25px; /* 20px + 25% = 25px */
+    background-color: #333;
+    border-radius: 10px;
+    margin: 15px auto;
+    overflow: hidden;
+}
+
+#gestion-capacite .capacity-fill {
+    height: 100%;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+#gestion-capacite .capacity-text .max-capacity {
+    color: #ff4444;
+}
+
+/* Contrôles de capacité */
+#gestion-capacite .capacity-controls {
+    padding: 25px; /* 20px + 25% = 25px */
+    display: flex;
+    flex-direction: column;
+    gap: 31px; /* 25px + 25% = 31px */
+}
+
+/* GROUPES D'INPUT AMÉLIORÉS */
+#gestion-capacite .input-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px; /* 10px + 25% = 12px */
+    padding: 15px 19px; /* 12px + 25% = 15px, 15px + 25% = 19px */
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border-left: 3px solid #9733EE;
+    backdrop-filter: blur(10px);
+}
+
+#gestion-capacite .input-group label {
+    font-size: clamp(14px, 3vw, 16px);
+    font-weight: 600;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+}
+
+#gestion-capacite .input-group label i {
+    color: #ffffff; /* Retour au blanc */
+    font-size: 1.1em;
+}
+
+#gestion-capacite .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* 10px + 25% = 12px */
+}
+
+#gestion-capacite .input-group input {
+    width: 125px; /* 100px + 25% = 125px */
+    max-width: 100%;
+    padding: 10px; /* 8px + 25% = 10px */
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+#gestion-capacite .input-group input:focus {
+    outline: none;
+    border-color: #9733EE;
+    box-shadow: 0 0 0 2px rgba(151, 51, 238, 0.3);
+    background: rgba(151, 51, 238, 0.1);
+}
+
+#gestion-capacite .input-group input[readonly] {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: #555;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* GROUPE DE CONTRÔLE AMÉLIORÉ */
+#gestion-capacite .control-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px; /* 10px + 25% = 12px */
+    padding: 15px 19px; /* 12px + 25% = 15px, 15px + 25% = 19px */
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border-left: 3px solid #DA22FF;
+    backdrop-filter: blur(10px);
+}
+
+#gestion-capacite .control-group label {
+    font-size: clamp(14px, 3vw, 16px);
+    color: #ffffff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#gestion-capacite .control-group label i {
+    color: #ffffff; /* Retour au blanc */
+    font-size: 1.1em;
+}
+
+#gestion-capacite .control-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 8px + 25% = 10px */
+}
+
+#gestion-capacite .control-btn {
+    width: clamp(30px, 8vw, 40px);
+    height: clamp(30px, 8vw, 40px);
+    border-radius: 50%;
+    border: none;
+    background-color: #333;
+    color: #ffffff;
+    font-size: clamp(14px, 4vw, 18px);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+#gestion-capacite .control-btn:hover {
+    background-color: #444;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+#gestion-capacite .control-btn:active {
+    background-color: #555;
+    animation: pulse 0.2s ease;
+}
+
+/* Boutons de réinitialisation */
+#gestion-capacite .reset-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+#gestion-capacite .update-btn,
+#gestion-capacite .reset-btn,
+#gestion-capacite .auto-reset-btn {
+    padding: 8px 14px;
+    color: #ffffff;
+    border: 1px solid #444;
+    border-radius: 6px;
+    font-size: clamp(12px, 3vw, 14px);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+}
+
+#gestion-capacite .update-btn {
+    background: linear-gradient(to right, #9733EE, #DA22FF);
+    border: none;
+    box-shadow: 0 2px 5px rgba(151, 51, 238, 0.3);
+}
+
+#gestion-capacite .reset-btn,
+#gestion-capacite .auto-reset-btn {
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+}
+
+#gestion-capacite .update-btn:hover,
+#gestion-capacite .reset-btn:hover,
+#gestion-capacite .auto-reset-btn:hover {
+    transform: translateY(-1px);
+}
+
+#gestion-capacite .update-btn:hover {
+    background: linear-gradient(to right, #a144ff, #e055ff);
+    box-shadow: 0 2px 8px rgba(151, 51, 238, 0.5);
+}
+
+#gestion-capacite .reset-btn:hover,
+#gestion-capacite .auto-reset-btn:hover {
+    background-color: #4a4a4a;
+    border-color: #777;
+}
+
+/* Icônes des boutons */
+#gestion-capacite .update-btn i { color: #ffffff; }
+#gestion-capacite .reset-btn i { color: #ff5555; }
+#gestion-capacite .auto-reset-btn i { color: #3399ff; }
+
+/* Infobulles */
+#gestion-capacite .update-btn::after,
+#gestion-capacite .reset-btn::after,
+#gestion-capacite .auto-reset-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 10;
+}
+
+#gestion-capacite .update-btn:hover::after,
+#gestion-capacite .reset-btn:hover::after,
+#gestion-capacite .auto-reset-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* MODAL AVEC LE DESIGN DES HORAIRES */
+.tax-confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+}
+
+.tax-confirmation-modal .modal-content {
+    background: linear-gradient(135deg, #2c2c2c, #0f0f0f);
+    border-radius: 12px;
+    padding: 37px; /* 30px + 25% = 37px */
+    width: 90%;
+    max-width: 500px; /* 400px + 25% = 500px */
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    border: 1px solid #444444;
+    position: relative;
+}
+
+.tax-confirmation-modal .modal-content p {
+    font-size: clamp(14px, 4vw, 16px);
+    margin-bottom: 25px;
+    color: #e0e0e0;
+    line-height: 1.5;
+    margin-top: 0;
+}
+
+.tax-confirmation-modal .modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Boutons avec le style des horaires */
+.tax-confirmation-modal .btn-yes,
+.tax-confirmation-modal .btn-no {
+    background: linear-gradient(135deg, var(--primary-color, #9733EE), var(--secondary-color, #DA22FF));
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.tax-confirmation-modal .btn-no {
+    background: linear-gradient(135deg, #666, #888);
+}
+
+.tax-confirmation-modal .btn-yes:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(151, 51, 238, 0.4);
+    background: linear-gradient(135deg, var(--secondary-color, #DA22FF), var(--primary-color, #9733EE));
+}
+
+.tax-confirmation-modal .btn-no:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 102, 102, 0.4);
+    background: linear-gradient(135deg, #888, #aaa);
+}
+
+/* Interface de planification */
+#capaciteAutoResetInterface {
+    display: none;
+}
+
+#gestion-capacite .schedule-section {
+    padding: 20px;
+}
+
+#gestion-capacite .day-schedule {
+    margin-bottom: 10px;
+}
+
+#gestion-capacite .day-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #2c2c2c;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+#gestion-capacite .day-header.active {
+    background-color: #333;
+    border-left: 4px solid #9733EE;
+}
+
+#gestion-capacite .toggle {
+    margin-right: 15px;
+}
+
+#gestion-capacite .day-name {
+    font-size: 18px;
+    font-weight: 500;
+    flex: 1;
+    color: #b3b3b3;
+}
+
+#gestion-capacite .status {
+    font-size: 14px;
+    margin-right: 15px;
+}
+
+#gestion-capacite .status.active {
+    color: #33cc33;
+}
+
+#gestion-capacite .status.inactive {
+    color: #b3b3b3;
+}
+
+/* Info section - Plus discrète */
+.schedule-info {
+    background-color: rgba(42, 77, 92, 0.3); /* Plus transparent */
+    padding: 8px 10px; /* Plus petit */
+    margin-bottom: 12px; /* Moins d'espace */
+    border-radius: 4px; /* Plus petit rayon */
+}
+
+.schedule-info .info-text {
+    margin: 0;
+    color: #87CEEB; /* Plus discret */
+    font-size: 10px; /* Plus petit */
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Moins d'espace */
+    line-height: 1.3;
+    opacity: 0.8; /* Moins visible */
+}
+
+.schedule-info .info-text i {
+    color: #3399ff;
+    font-size: 0.9em; /* Plus petit */
+}
+
+/* Time selector */
+.time-selector {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.hour-select {
+    padding: 8px 12px;
+    background-color: #333;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 120px;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+}
+
+.hour-select:disabled {
+    background-color: #2c2c2c;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.hour-select:focus {
+    outline: none;
+    box-shadow: 0 2px 8px rgba(187, 134, 252, 0.5);
+}
+
+.hour-suffix {
+    color: #b3b3b3;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Exemples d'usage */
+.schedule-examples {
+    background-color: #1a3d1a;
+    border-left: 4px solid #4CAF50;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 6px;
+}
+
+.schedule-examples h4 {
+    margin: 0 0 10px 0;
+    color: #81C784;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-examples ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #C8E6C9;
+}
+
+.schedule-examples li {
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+#gestion-capacite .time-input {
+    padding: 8px;
+    background-color: #333;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    width: 100px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s ease;
+}
+
+#gestion-capacite .time-input:disabled {
+    background-color: #2c2c2c;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#gestion-capacite .time-input:focus {
+    outline: none;
+    box-shadow: 0 2px 8px rgba(187, 134, 252, 0.5);
+}
+
+#gestion-capacite .back-btn {
+    padding: 12px;
+    background: linear-gradient(to right, #666, #999);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: clamp(14px, 4vw, 16px);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#gestion-capacite .back-btn:hover {
+    background-color: #3a3a3a;
+    border-color: #777;
+}
+
+/* Animation pulse */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    #gestion-capacite .container {
+        margin: 0 5px;
+    }
+    
+    #gestion-capacite .capacity-controls {
+        padding: 10px;
+    }
+    
+    #gestion-capacite .input-group,
+    #gestion-capacite .control-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #gestion-capacite .reset-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #gestion-capacite .input-wrapper {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .tax-confirmation-modal .modal-content {
+        margin: 0 10px;
+        width: calc(100% - 20px);
+    }
+}
+
+/* Alertes */
+.capacite-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 19px 25px; /* 15px + 25% = 19px, 20px + 25% = 25px */
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    z-index: 10001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    max-width: 437px; /* 350px + 25% = 437px */
+}
+
+.capacite-alert.show {
+    transform: translateX(0);
+}
+
+.capacite-alert.success {
+    background: linear-gradient(to right, #4CAF50, #66BB6A);
+}
+
+.capacite-alert.error {
+    background: linear-gradient(to right, #f44336, #ef5350);
+}
+
+.capacite-alert.info {
+    background: linear-gradient(to right, #2196F3, #42A5F5);
+}
+
+/* Animation pour les alertes */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
