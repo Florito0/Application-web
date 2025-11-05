@@ -1,0 +1,661 @@
+class GestionVestiaires {
+    constructor() {
+        this.articles = [];
+        this.editingArticleId = null;
+        this.apiUrl = '/api/vestiaires';
+        this.draggedElement = null;
+        this.isKioskMode = false; // 🔧 NOUVEAU
+        this.kioskSelections = {};
+    }
+
+    async init() {
+        console.log('🎫 Initialisation Gestion Vestiaires');
+        this.attachEventListeners();
+        this.attachToggleListener(); // 🔧 NOUVEAU
+        await this.loadArticles();
+    }
+
+    // 🔧 NOUVEAU : Gestion du bouton de bascule
+    attachToggleListener() {
+        const toggleBtn = document.getElementById('toggle-vestiaire-interface-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => this.toggleInterface());
+        }
+    }
+
+    // 🔧 NOUVEAU : Basculer entre Admin et Kiosque
+    toggleInterface() {
+        this.isKioskMode = !this.isKioskMode;
+        
+        const adminView = document.getElementById('vestiaires-admin-view');
+        const kioskView = document.getElementById('vestiaires-kiosk-view');
+        const toggleBtn = document.getElementById('toggle-vestiaire-interface-btn');
+
+        if (this.isKioskMode) {
+            // Passer en mode Kiosque
+            adminView.style.display = 'none';
+            kioskView.style.display = 'block';
+            toggleBtn.textContent = 'Passer au Tableau de Bord';
+            
+            // Charger l'interface kiosque
+            this.loadKioskInterface();
+        } else {
+            // Passer en mode Admin
+            adminView.style.display = 'block';
+            kioskView.style.display = 'none';
+            toggleBtn.textContent = 'Passer au Kiosque';
+        }
+    }
+
+     // 🆕 NOUVELLE FONCTION : Récupérer le nom de la discothèque
+    async getDiscoName() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return 'Nom de la discothèque';
+
+            const response = await fetch('/api/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.discoName || 'Nom de la discothèque';
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération du nom:', error);
+        }
+        return 'Nom de la discothèque';
+    }
+
+    // 🆕 NOUVELLE FONCTION : Formater la date du jour
+    getFormattedDate() {
+        const today = new Date();
+        const daysOfWeek = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+        const months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+        
+        const dayName = daysOfWeek[today.getDay()];
+        const day = today.getDate();
+        const month = months[today.getMonth()];
+        const year = today.getFullYear();
+        
+        return `${dayName} ${day} ${month} ${year}`;
+    }
+
+    // 🔧 MODIFIÉ : Charger l'interface kiosque avec nom + date
+    async loadKioskInterface() {
+        const container = document.getElementById('vestiaires-kiosque-content-standalone');
+        const headerElement = document.querySelector('#vestiaires-kiosk-view .vestiaires-header');
+        
+        if (!container) return;
+
+        // 🆕 Mettre à jour le header avec nom + date
+        if (headerElement) {
+            const discoName = await this.getDiscoName();
+            const formattedDate = this.getFormattedDate();
+            
+            headerElement.innerHTML = `
+                <h1>${discoName}</h1>
+                <div class="subtitle">${formattedDate}</div>
+                <div style="margin-top: 30px; font-size: 24px; font-weight: 700; color: #fff;">VESTIAIRE</div>
+                <div class="subtitle" style="margin-top: 8px;">Sélectionnez vos articles</div>
+            `;
+        }
+
+        if (this.articles.length === 0) {
+            container.innerHTML = '<div class="empty-message">Aucun article disponible</div>';
+            return;
+        }
+
+        this.articles.forEach(article => {
+            if (this.kioskSelections[article.id] === undefined) {
+                this.kioskSelections[article.id] = 0;
+            }
+        });
+
+        container.innerHTML = '';
+
+        this.articles.forEach(article => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'kiosque-item';
+            
+            itemDiv.innerHTML = `
+                <div class="kiosque-item-name">${this.escapeHtml(article.nom)}</div>
+                <div class="kiosque-item-price">${parseFloat(article.prix).toFixed(2)}€</div>
+                <div class="kiosque-quantity-control">
+                    <button class="kiosque-qty-btn" data-id="${article.id}" data-action="decrease">−</button>
+                    <div class="kiosque-qty-value" id="qty-standalone-${article.id}">${this.kioskSelections[article.id]}</div>
+                    <button class="kiosque-qty-btn" data-id="${article.id}" data-action="increase">+</button>
+                </div>
+            `;
+            
+            container.appendChild(itemDiv);
+        });
+
+        this.attachKioskQuantityListeners();
+        this.updateKioskTotal();
+    }
+
+    attachKioskQuantityListeners() {
+        document.querySelectorAll('.kiosque-qty-btn').forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+        });
+
+        document.querySelectorAll('.kiosque-qty-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const articleId = e.target.dataset.id;
+                const action = e.target.dataset.action;
+                
+                if (action === 'increase') {
+                    this.kioskSelections[articleId]++;
+                } else if (action === 'decrease' && this.kioskSelections[articleId] > 0) {
+                    this.kioskSelections[articleId]--;
+                }
+
+                const qtyElement = document.getElementById(`qty-standalone-${articleId}`);
+                if (qtyElement) {
+                    qtyElement.textContent = this.kioskSelections[articleId];
+                }
+
+                this.updateKioskTotal();
+            });
+        });
+
+        const validateBtn = document.getElementById('validate-vestiaires-btn-standalone');
+        const skipBtn = document.getElementById('skip-vestiaires-btn-standalone');
+
+        if (validateBtn) {
+            const newValidateBtn = validateBtn.cloneNode(true);
+            validateBtn.parentNode.replaceChild(newValidateBtn, validateBtn);
+            
+            newValidateBtn.addEventListener('click', () => {
+                this.showNotification('Sélection validée !', 'success');
+                Object.keys(this.kioskSelections).forEach(key => this.kioskSelections[key] = 0);
+                this.loadKioskInterface();
+            });
+        }
+
+        if (skipBtn) {
+            const newSkipBtn = skipBtn.cloneNode(true);
+            skipBtn.parentNode.replaceChild(newSkipBtn, skipBtn);
+            
+            newSkipBtn.addEventListener('click', () => {
+                this.showNotification('Continuer sans vestiaire', 'success');
+            });
+        }
+    }
+
+    // 🔧 MODIFIÉ : Mettre à jour le total du kiosque ET l'état des boutons
+updateKioskTotal() {
+    let total = 0;
+    let hasSelection = false;
+
+    this.articles.forEach(article => {
+        const qty = this.kioskSelections[article.id] || 0;
+        if (qty > 0) {
+            hasSelection = true;
+            total += qty * parseFloat(article.prix);
+        }
+    });
+
+    const totalElement = document.getElementById('vestiaire-total-standalone');
+    const validateBtn = document.getElementById('validate-vestiaires-btn-standalone');
+    const skipBtn = document.getElementById('skip-vestiaires-btn-standalone');
+
+    // Mettre à jour le total
+    if (totalElement) {
+        totalElement.textContent = `${total.toFixed(2)}€`;
+    }
+
+    // Gérer l'état des boutons selon la sélection
+    if (hasSelection) {
+        // Articles sélectionnés : VALIDER actif, CONTINUER désactivé
+        if (validateBtn) {
+            validateBtn.classList.add('active');
+            validateBtn.classList.remove('disabled');
+            validateBtn.disabled = false;
+        }
+        if (skipBtn) {
+            skipBtn.classList.remove('active');
+            skipBtn.classList.add('disabled');
+            skipBtn.disabled = true;
+        }
+    } else {
+        // Aucun article : CONTINUER actif, VALIDER désactivé
+        if (validateBtn) {
+            validateBtn.classList.remove('active');
+            validateBtn.classList.add('disabled');
+            validateBtn.disabled = true;
+        }
+        if (skipBtn) {
+            skipBtn.classList.add('active');
+            skipBtn.classList.remove('disabled');
+            skipBtn.disabled = false;
+        }
+    }
+}
+
+    attachEventListeners() {
+        // Bouton d'ajout d'article
+        const addBtn = document.querySelector('#add-article-vestiaire-btn');
+        if (addBtn) {
+            addBtn.addEventListener('click', () => this.handleAddArticle());
+        }
+
+        // Bouton d'annulation d'édition
+        const cancelBtn = document.querySelector('#cancel-edit-article-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => this.cancelEdit());
+        }
+
+        // Entrée clavier dans les champs du formulaire
+        const nameInput = document.querySelector('#article-vestiaire-name');
+        const priceInput = document.querySelector('#article-vestiaire-price');
+        
+        if (nameInput) {
+            nameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleAddArticle();
+            });
+        }
+        
+        if (priceInput) {
+            priceInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleAddArticle();
+            });
+        }
+    }
+
+    async loadArticles() {
+        try {
+            this.showLoading(true);
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                this.showNotification('Session expirée. Veuillez vous reconnecter.', 'error');
+                return;
+            }
+
+            const response = await fetch(`${this.apiUrl}/articles`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            this.articles = data.articles || [];
+            this.renderArticles();
+            
+        } catch (error) {
+            console.error('❌ Erreur chargement articles:', error);
+            this.showNotification('Erreur lors du chargement des articles', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    renderArticles() {
+        const container = document.querySelector('#articles-vestiaire-list');
+        if (!container) {
+            console.error('Conteneur articles-vestiaire-list introuvable');
+            return;
+        }
+
+        if (this.articles.length === 0) {
+            container.innerHTML = '<div class="empty-message">Aucun article de vestiaire configuré. Ajoutez-en un ci-dessous.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        
+        this.articles.forEach(article => {
+            const articleDiv = document.createElement('div');
+            articleDiv.className = 'article-item';
+            articleDiv.draggable = true;
+            articleDiv.dataset.id = article.id;
+            
+            articleDiv.innerHTML = `
+                <div class="article-info">
+                    <div class="article-name">${this.escapeHtml(article.nom)}</div>
+                    <div class="article-price">${parseFloat(article.prix).toFixed(2)}€</div>
+                </div>
+                <div class="article-actions">
+                    <button class="edit-btn" data-id="${article.id}" aria-label="Modifier ${article.nom}">✏️</button>
+                    <button class="delete-btn" data-id="${article.id}" aria-label="Supprimer ${article.nom}">🗑️</button>
+                </div>
+            `;
+            
+            container.appendChild(articleDiv);
+        });
+
+        this.attachArticleEvents();
+    }
+
+    attachArticleEvents() {
+        // Boutons de suppression
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.closest('.delete-btn').dataset.id;
+                this.confirmDelete(id);
+            });
+        });
+
+        // Boutons d'édition
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.closest('.edit-btn').dataset.id;
+                this.startEdit(id);
+            });
+        });
+
+        // Drag and drop
+        const items = document.querySelectorAll('.article-item');
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => this.handleDragStart(e));
+            item.addEventListener('dragend', (e) => this.handleDragEnd(e));
+            item.addEventListener('dragover', (e) => this.handleDragOver(e));
+            item.addEventListener('drop', (e) => this.handleDrop(e));
+        });
+    }
+
+    async handleAddArticle() {
+        const nameInput = document.querySelector('#article-vestiaire-name');
+        const priceInput = document.querySelector('#article-vestiaire-price');
+        
+        const nom = nameInput?.value.trim();
+        const prix = parseFloat(priceInput?.value);
+
+        if (!nom || !prix || prix < 0) {
+            this.showNotification('Veuillez entrer un nom et un prix valides', 'error');
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const url = this.editingArticleId 
+                ? `${this.apiUrl}/articles/${this.editingArticleId}`
+                : `${this.apiUrl}/articles`;
+            
+            const method = this.editingArticleId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nom, prix })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            this.showNotification(
+                this.editingArticleId ? 'Article modifié avec succès' : 'Article ajouté avec succès', 
+                'success'
+            );
+            
+            this.cancelEdit();
+            await this.loadArticles();
+            
+        } catch (error) {
+            console.error('❌ Erreur sauvegarde article:', error);
+            this.showNotification('Erreur lors de la sauvegarde', 'error');
+        }
+    }
+
+    startEdit(id) {
+        const article = this.articles.find(a => a.id == id);
+        if (!article) return;
+
+        this.editingArticleId = id;
+        
+        const nameInput = document.querySelector('#article-vestiaire-name');
+        const priceInput = document.querySelector('#article-vestiaire-price');
+        const addBtn = document.querySelector('#add-article-vestiaire-btn');
+        const cancelBtn = document.querySelector('#cancel-edit-article-btn');
+
+        if (nameInput) nameInput.value = article.nom;
+        if (priceInput) priceInput.value = article.prix;
+        
+        if (addBtn) {
+            addBtn.textContent = 'Modifier';
+            addBtn.classList.add('update-article-btn');
+        }
+        
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
+    }
+
+    cancelEdit() {
+        this.editingArticleId = null;
+        
+        const nameInput = document.querySelector('#article-vestiaire-name');
+        const priceInput = document.querySelector('#article-vestiaire-price');
+        const addBtn = document.querySelector('#add-article-vestiaire-btn');
+        const cancelBtn = document.querySelector('#cancel-edit-article-btn');
+
+        if (nameInput) nameInput.value = '';
+        if (priceInput) priceInput.value = '';
+        
+        if (addBtn) {
+            addBtn.textContent = 'Ajouter';
+            addBtn.classList.remove('update-article-btn');
+        }
+        
+        if (cancelBtn) cancelBtn.style.display = 'none';
+    }
+
+    confirmDelete(id) {
+    const article = this.articles.find(a => a.id == id);
+    if (!article) return;
+
+    const modal = document.getElementById('custom-confirmation-modal');
+    const message = document.getElementById('modal-message');
+    const okBtn = document.getElementById('modal-button-ok');
+    const cancelBtn = document.getElementById('modal-button-cancel');
+
+    if (!modal || !okBtn || !cancelBtn) {
+        console.error('Éléments de la modale introuvables');
+        return;
+    }
+
+    if (message) message.textContent = `Supprimer l'article "${article.nom}" ?`;
+    
+    // 🔧 Nettoyer les anciens listeners en clonant les boutons
+    const newOkBtn = okBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+    // Afficher la modale
+    modal.style.display = 'flex';
+    // Forcer le reflow pour éviter les bugs d'animation
+    modal.offsetHeight;
+    modal.classList.add('show');
+
+    const handleOk = async () => {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        await this.deleteArticle(id);
+    };
+
+    const handleCancel = () => {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+    };
+
+    newOkBtn.addEventListener('click', handleOk);
+    newCancelBtn.addEventListener('click', handleCancel);
+}
+
+    async deleteArticle(id) {
+        try {
+            const token = localStorage.getItem('token');
+            
+            const response = await fetch(`${this.apiUrl}/articles/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur ${response.status}`);
+            }
+
+            this.showNotification('Article supprimé avec succès', 'success');
+            await this.loadArticles();
+            
+        } catch (error) {
+            console.error('❌ Erreur suppression article:', error);
+            this.showNotification('Erreur lors de la suppression', 'error');
+        }
+    }
+
+    async updateOrder(newOrder) {
+        try {
+            const token = localStorage.getItem('token');
+            
+            const response = await fetch(`${this.apiUrl}/articles/reorder`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ order: newOrder })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur ${response.status}`);
+            }
+
+        } catch (error) {
+            console.error('❌ Erreur mise à jour ordre:', error);
+        }
+    }
+
+    // Drag and Drop handlers
+    handleDragStart(e) {
+        this.draggedElement = e.target.closest('.article-item');
+        if (this.draggedElement) {
+            this.draggedElement.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.draggedElement.innerHTML);
+        }
+    }
+
+    handleDragEnd(e) {
+        if (this.draggedElement) {
+            this.draggedElement.classList.remove('dragging');
+        }
+        
+        document.querySelectorAll('.article-item').forEach(item => {
+            item.classList.remove('drag-over');
+        });
+    }
+
+    handleDragOver(e) {
+        if (e.preventDefault) e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        
+        const target = e.target.closest('.article-item');
+        if (target && target !== this.draggedElement) {
+            target.classList.add('drag-over');
+        }
+        
+        return false;
+    }
+
+    handleDrop(e) {
+        if (e.stopPropagation) e.stopPropagation();
+        e.preventDefault();
+
+        const dropTarget = e.target.closest('.article-item');
+        
+        if (this.draggedElement && dropTarget && this.draggedElement !== dropTarget) {
+            const draggedId = parseInt(this.draggedElement.dataset.id);
+            const targetId = parseInt(dropTarget.dataset.id);
+            
+            const draggedIndex = this.articles.findIndex(a => a.id === draggedId);
+            const targetIndex = this.articles.findIndex(a => a.id === targetId);
+            
+            if (draggedIndex !== -1 && targetIndex !== -1) {
+                const [removed] = this.articles.splice(draggedIndex, 1);
+                this.articles.splice(targetIndex, 0, removed);
+                
+                this.renderArticles();
+                
+                const newOrder = this.articles.map((article, index) => ({
+                    id: article.id,
+                    ordre: index
+                }));
+                
+                this.updateOrder(newOrder);
+            }
+        }
+        
+        return false;
+    }
+
+    showLoading(show) {
+        const container = document.querySelector('#articles-vestiaire-list');
+        if (!container) return;
+
+        if (show) {
+            container.innerHTML = `
+                <div class="vestiaires-loading">
+                    <div class="spinner"></div>
+                </div>
+            `;
+        }
+    }
+
+    showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `vestiaires-notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+// Fonction d'initialisation globale
+window.initGestionVestiaires = function() {
+    if (!window.gestionVestiairesInstance) {
+        window.gestionVestiairesInstance = new GestionVestiaires();
+        gestionVestiairesInstance.init();
+    } else {
+        gestionVestiairesInstance.loadArticles();
+    }
+};
+
+// Fonction pour obtenir l'instance
+window.getGestionVestiairesInstance = function() {
+    return gestionVestiairesInstance;
+};
