@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Vertical - Discothèque</title>
+    <link rel="stylesheet" href="/css/interface-app.css">
+    <link rel="stylesheet" href="/css/gestion-codes-jour.css">
+    <link rel="stylesheet" href="/css/gestion-horaires.css">
+    <link rel="stylesheet" href="/css/gestion-capacite.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/genre.css">
+    <link rel="stylesheet" href="/css/gestion-entrees.css">
+    <link rel="stylesheet" href="/css/gestion-vestiaires.css">
+    <link rel="stylesheet" href="/css/configuration.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="modal" id="welcomeModal" role="dialog" aria-labelledby="welcomeModalTitle" aria-describedby="welcomeModalDesc" tabindex="-1">
+        <div class="modal-content">
+            <h2 id="welcomeModalTitle">Bienvenue !</h2>
+            <p id="welcomeModalDesc">Utilisez le menu à gauche pour gérer votre discothèque. Cliquez sur "Gestion" pour commencer à configurer les paramètres essentiels comme la capacité d'accueil et les tickets d'entrée.</p>
+            <button>Commencer</button>
+            <div class="checkbox">
+                <input type="checkbox" id="dontShowAgain">
+                <label for="dontShowAgain">Ne plus afficher</label>
+            </div>
+        </div>
+    </div>
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="modal-content">
+            <p>Informations enregistrées avec succès !</p>
+            <button>OK</button>
+        </div>
+    </div>
+   <div class="sidebar" id="sidebar">
+    <button class="toggle-btn" aria-label="Réduire/Étendre le menu">
+        <span id="toggleIcon" class="icon chevron-left"></span>
+    </button>
+    <a href="#" class="menu-item pulse active" data-target="gestion" aria-label="Gestion" data-tooltip="Gestion">
+        <span class="icon list"></span>
+        <span class="text">Gestion</span>
+    </a>
+    <a href="#" class="menu-item" data-target="reservation" aria-label="Réservation" data-tooltip="Réservation">
+        <span class="icon calendar"></span>
+        <span class="text">Réservation</span>
+    </a>
+    <a href="#" class="menu-item" data-target="kiosque" aria-label="Kiosque" data-tooltip="Kiosque">
+        <span class="icon screen"></span>
+        <span class="text">Kiosque</span>
+    </a>
+    <a href="#" class="menu-item" data-target="profile" aria-label="Profile" data-tooltip="Profile">
+        <span class="icon user"></span>
+        <span class="text">Profile</span>
+    </a>
+    <a href="#" class="menu-item" data-target="rapports" aria-label="Rapports/Statistiques" data-tooltip="Rapports/Statistiques">
+        <span class="icon chart"></span>
+        <span class="text">Rapports/Statistiques</span>
+    </a>
+    <a href="#" class="menu-item" data-target="configuration" aria-label="Configuration" data-tooltip="Configuration">
+        <span class="icon gear"></span>
+        <span class="text">Configuration</span>
+    </a>
+</div>
+    <div class="main-content" id="mainContent">
+        <div class="content-section" id="gestion">
+            <h2>Gestion</h2>
+            <div class="subtitle">Configurez les paramètres essentiels de votre discothèque</div>
+            <div class="submenu-content">
+                <a href="#" class="submenu-item" data-target="gestion-capacite">
+                    <span class="icon group"></span> Capacité d'accueil <div class="description">Définir le nombre maximum de clients</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="gestion-tickets-entree">
+                    <span class="icon ticket"></span> Tickets d'entrée <div class="description">Gérer les prix et types de tickets</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="gestion-tickets-vestiaire">
+                    <span class="icon shirt"></span> Tickets vestiaire <div class="description">Configurer les tickets pour le vestiaire</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="gestion-heures-creuses">
+                    <span class="icon clock"></span> Heures creuses <div class="description">Définir les périodes à faible affluence</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="gestion-code-jour">
+                    <span class="icon key"></span> Code jour <div class="description">Gérer les codes d'accès quotidiens</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="content-section gestion-entrees" id="gestion-tickets-entree">
+            <a href="#" class="back-button" data-target="gestion">← Retour</a>
+            <button class="toggle-interface-btn" id="toggle-interface-btn" style="margin-bottom: 15px;">Passer au Kiosque</button>
+            <div class="container">
+                <div class="header-content">
+                    <h1>Gestion des entrées</h1>
+                    <div class="subtitle">Configurez vos formules d'entrée</div>
+                </div>
+                <div class="current-prestations">
+                    <h2>Prestations actuelles</h2>
+                    <div class="day-filter" id="day-filter">
+                        <button class="day-btn" data-day="Lundi">Lundi</button>
+                        <button class="day-btn" data-day="Mardi">Mardi</button>
+                        <button class="day-btn" data-day="Mercredi">Mercredi</button>
+                        <button class="day-btn" data-day="Jeudi">Jeudi</button>
+                        <button class="day-btn" data-day="Vendredi">Vendredi</button>
+                        <button class="day-btn" data-day="Samedi">Samedi</button>
+                        <button class="day-btn" data-day="Dimanche">Dimanche</button>
+                        <button class="preview-btn">Aperçu</button>
+                    </div>
+                    <div class="prestation-container" id="access-prestations-list"></div>
+                    <div class="prestation-container" id="pure-prestations-list"></div>
+                    <div id="preview-section" style="display: none;"></div>
+                </div>
+                <div class="access-form" id="access-form">
+                    <div class="form-group">
+                        <label>Jour(s)</label>
+                        <div class="days-checkboxes" id="days-checkboxes">
+                            <label><input type="checkbox" name="days" value="Lundi"> Lundi</label>
+                            <label><input type="checkbox" name="days" value="Mardi"> Mardi</label>
+                            <label><input type="checkbox" name="days" value="Mercredi"> Mercredi</label>
+                            <label><input type="checkbox" name="days" value="Jeudi"> Jeudi</label>
+                            <label><input type="checkbox" name="days" value="Vendredi"> Vendredi</label>
+                            <label><input type="checkbox" name="days" value="Samedi"> Samedi</label>
+                            <label><input type="checkbox" name="days" value="Dimanche"> Dimanche</label>
+                        </div>
+                    </div>
+                    <div class="form-group presentation-group">
+                        <h3>Les entrées</h3>
+                        <div class="presentation-fields">
+                            <div>
+                                <label>Entrée sans Boisson: <span class="tooltip-icon" data-tooltip="TVA incluse">i</span></label>
+                                <input type="text" placeholder="Ex: Entrée sans conso." id="access-presentation-normal">
+                            </div>
+                            <div>
+                                <label>Entrée + Alcool: <span class="tooltip-icon" data-tooltip="TVA incluse">i</span></label>
+                                <input type="text" placeholder="Ex: Entrée avec conso." id="access-presentation-alcohol">
+                            </div>
+                            <div>
+                                <label>Heure Creuse: <span class="tooltip-icon" data-tooltip="TVA incluse">i</span></label>
+                                <input type="text" placeholder="Ex: Entrée Gratuit" id="access-presentation-low">
+                            </div>
+                            <div>
+                                <label>Entrée + Soft: <span class="tooltip-icon" data-tooltip="TVA incluse">i</span></label>
+                                <input type="text" placeholder="Ex: Entrée avec conso. soft" id="access-presentation-soft">
+                            </div>
+                            <div class="price-container">
+                                <label>Prix</label>
+                                <input type="number" step="0.01" min="0" placeholder="Prix (€)" id="access-price">
+                            </div>
+                            <div class="sex-container">
+                                <label>Sexe</label>
+                                <select id="access-sex">
+                                    <option value="Homme">♂ Homme</option>
+                                    <option value="Femme">♀ Femme</option>
+                                    <option value="H/F" selected>♂/♀ H/F</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group pure-group">
+                        <h3>Les entrées avec bouteille <span class="tooltip-icon" data-tooltip="TVA incluse">i</span></h3>
+                        <div class="pure-container" id="pure-container"></div>
+                        <button type="button" class="add-pure-btn">+ Ajouter une formule bouteille</button>
+                    </div>
+                </div>
+                <button class="save-btn">Enregistrer les modifications</button>
+            </div>
+        </div>
+
+       <div class="content-section gestion-vestiaires" id="gestion-tickets-vestiaire">
+    <a href="#" class="back-button" data-target="gestion">← Retour</a>
+    
+    <!-- Bouton de bascule -->
+    <button class="toggle-interface-btn" id="toggle-vestiaire-interface-btn" style="margin-bottom: 15px;">
+        Passer au Kiosque
+    </button>
+    
+    <!-- Interface ADMIN (gestion des articles) -->
+    <div class="vestiaires-container" id="vestiaires-admin-view">
+        <div class="vestiaires-header">
+            <h1>Gestion des Articles de Vestiaire</h1>
+            <div class="subtitle">Configurez les articles disponibles au vestiaire</div>
+        </div>
+        <div class="vestiaires-admin">
+            <h2>Articles configurés</h2>
+            <div class="articles-list" id="articles-vestiaire-list">
+                <div class="vestiaires-loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            <div class="article-form">
+                <h3>Ajouter un article</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="article-vestiaire-name">Nom de l'article</label>
+                        <input type="text" id="article-vestiaire-name" placeholder="Ex: Manteau, Sac, Veste..." autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="article-vestiaire-price">Prix (€)</label>
+                        <input type="number" id="article-vestiaire-price" placeholder="0.00" step="0.01" min="0" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <button id="add-article-vestiaire-btn" class="add-article-btn">Ajouter</button>
+                        <button id="cancel-edit-article-btn" class="cancel-edit-btn" style="display: none;">Annuler</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- FIN Interface ADMIN -->
+    
+    <!-- Interface KIOSQUE (sélection client) -->
+    <div class="vestiaires-container" id="vestiaires-kiosk-view" style="display: none;">
+        <div class="vestiaires-header">
+            <h1>VESTIAIRE</h1>
+            <div class="subtitle">Sélectionnez vos articles</div>
+        </div>
+        <div class="vestiaires-kiosque" id="vestiaires-kiosque-content-standalone">
+            <div class="vestiaires-loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <div class="vestiaires-actions">
+            <div class="vestiaires-total">
+                <span>TOTAL VESTIAIRE</span>
+                <span id="vestiaire-total-standalone">0.00€</span>
+            </div>
+            <div class="vestiaires-buttons">
+                <button id="validate-vestiaires-btn-standalone" class="validate-vestiaires-btn" disabled>
+                    VALIDER LE VESTIAIRE
+                </button>
+                <button id="skip-vestiaires-btn-standalone" class="skip-vestiaires-btn">
+                    CONTINUER SANS VESTIAIRE
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- FIN Interface KIOSQUE -->
+    
+</div>
+<!-- FIN gestion-tickets-vestiaire -->
+
+        <div class="content-section" id="gestion-capacite">
+            <a href="#" class="back-button" data-target="gestion">← Retour</a>
+            <div class="container" id="capaciteMainInterface">
+                <div class="header">
+                    <h1>GESTION CAPACITÉ</h1>
+                    <div class="subtitle">Affichage dynamique de la capacité actuelle</div>
+                </div>
+                <div class="capacity-display">
+                    <div class="current-capacity" id="current-capacity-display">0</div>
+                    <div class="capacity-bar">
+                        <div class="capacity-fill" id="capacity-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="capacity-text" id="capacity-text-display">
+                        0 / <span class="max-capacity">0</span>
+                    </div>
+                </div>
+                <div class="capacity-controls">
+                    <div class="input-group max-capacity">
+                        <label><i class="fas fa-tachometer-alt"></i> Capacité Maximum :</label>
+                        <div class="input-wrapper">
+                            <button class="update-btn" id="update-capacity-btn" data-tooltip="Appliquer la nouvelle capacité maximale">
+                                <i class="fas fa-check"></i> Appliquer
+                            </button>
+                            <input type="number" id="max-capacity-input" min="0" value="100">
+                        </div>
+                    </div>
+                    <div class="input-group current-count">
+                        <label><i class="fas fa-users"></i> Nombre de Clients Actuel :</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="current-count-input" min="0" value="0" readonly>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fas fa-sliders-h"></i> Ajustement :</label>
+                        <div class="control-buttons">
+                            <button class="control-btn" data-change="-1" aria-label="Décrémenter">−</button>
+                            <button class="control-btn" data-change="1" aria-label="Incrémenter">+</button>
+                        </div>
+                    </div>
+                    <div class="reset-buttons">
+                        <button class="reset-btn" id="show-reset-modal-btn" data-tooltip="Remettre à 0">
+                            <i class="fas fa-undo"></i> Réinitialiser le Compteur
+                        </button>
+                        <button class="auto-reset-btn" id="show-auto-reset-btn" data-tooltip="Planifier">
+                            <i class="fas fa-calendar-alt"></i> Planifier une Réinitialisation
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container" id="capaciteAutoResetInterface" style="display: none;">
+                <div class="header">
+                    <h1>Redémarrage Automatique</h1>
+                    <div class="subtitle">Planification de la remise à zéro des compteurs</div>
+                </div>
+                <div class="schedule-section"></div>
+            </div>
+        </div>
+        
+        <div class="content-section gestion-horaires" id="gestion-heures-creuses">
+            <a href="#" class="back-button" data-target="gestion">← Retour</a>
+            <div class="container">
+                <div class="header">
+                    <h1>HEURES CREUSES</h1>
+                    <div class="subtitle">Définir les périodes à faible affluence</div>
+                </div>
+                <div class="low-attendance-section">
+                    <div class="form-group">
+                        <label for="heures-creuses-start"><i class="fas fa-clock"></i> Début :</label>
+                        <input type="time" id="heures-creuses-start" value="22:00">
+                    </div>
+                    <div class="form-group">
+                        <label for="heures-creuses-end"><i class="fas fa-clock"></i> Fin :</label>
+                        <input type="time" id="heures-creuses-end" value="02:00">
+                    </div>
+                    <div class="toggle-group">
+                        <label for="heures-creuses-enabled">Activer les heures creuses</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="heures-creuses-enabled" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="save-section">
+                    <button class="save-btn" id="save-heures-creuses" data-tooltip="Enregistrer">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="gestion-code-jour">
+            <a href="#" class="back-button" data-target="gestion">← Retour</a>
+            <h2>Code Jour</h2>
+            <div class="subtitle">Gérer les codes d'accès quotidiens</div>
+            <div id="codes-jour-content">
+                <div class="year-month-nav" id="yearMonthNav"></div>
+                <div class="calendar" id="calendar">
+                    <div class="spinner"></div>
+                </div>
+                <div class="controls">
+                    <span class="generate-label">Générer Code Automatique</span>
+                    <button class="generate-option" id="generateMonthBtn">Mois</button>
+                    <button class="generate-option" id="generateYearBtn">Année</button>
+                    <button class="save-btn" id="saveCodesBtn">Sauvegarder</button>
+                    <button class="export-btn" id="exportPdfBtn">Exporter en PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="reservation">
+            <h2>Réservation</h2>
+            <div class="subtitle">Gérer les réservations des clients</div>
+            <p>Contenu de la page Réservation...</p>
+        </div>
+
+        <div class="content-section" id="client">
+            <h2>Client</h2>
+            <div class="subtitle">Consulter et gérer les informations des clients</div>
+            <p>Contenu de la page Client...</p>
+        </div>
+
+        <div class="content-section kiosk-integrated" id="kiosque">
+            <h2>Kiosque</h2>
+            <div class="subtitle">Interface kiosque pour les clients</div>
+            
+            <div id="genre-selection" class="kiosque-step">
+                <div class="container">
+                    <div class="header">
+                        <h1>Sélection</h1>
+                        <div class="subtitle">Qui êtes-vous ce soir ?</div>
+                        <div class="subtitle-note">(Pour tarifs et statistiques)</div>
+                    </div>
+                    <div class="items-container">
+                        <div class="gender-selection">
+                            <div class="gender-options">
+                                <div class="gender-option" data-gender="female">
+                                    <div class="gender-icon female-icon">♀</div>
+                                    <div class="gender-label">Femme</div>
+                                </div>
+                                <div class="gender-option" data-gender="male">
+                                    <div class="gender-icon male-icon">♂</div>
+                                    <div class="gender-label">Homme</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="checkout-btn" disabled>Valider</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tickets-entree" class="kiosque-step" style="display: none;">
+                <!-- Placeholder pour l'étape tickets -->
+            </div>
+            
+        </div>
+        <!-- FIN section kiosque -->
+
+        <div class="content-section" id="profile">
+            <h2>Profile</h2>
+            <div class="subtitle">Modifier les informations de votre discothèque</div>
+            <div class="cover-section" id="coverSection">
+                <div class="placeholder" id="coverPlaceholder">
+                    <span class="icon image"></span>
+                    Aucune couverture sélectionnée
+                </div>
+                <img id="coverImage" src="" alt="Couverture" style="display: none;">
+                <div class="cover-actions">
+                    <label for="coverUpload" class="upload-btn">Ajouter une couverture</label>
+                    <button id="removeCoverBtn" style="display: none;">Supprimer</button>
+                    <input type="file" id="coverUpload" accept="image/*">
+                </div>
+                <p class="upload-recommendation">Recommandé : Format 16:9, < 500 Ko.</p>
+                <span class="error-message" id="coverError">Veuillez ajouter une couverture.</span>
+            </div>
+            <form id="profileForm" class="form-section">
+                <div class="form-group">
+                    <label for="discoName">Nom de la discothèque</label>
+                    <input type="text" id="discoName" name="discoName" placeholder="Nom" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">Ville</label>
+                    <input type="text" id="city" name="city" placeholder="Ville" required>
+                </div>
+                <div class="form-group">
+                    <label for="postalCode">Code postal</label>
+                    <input type="text" id="postalCode" name="postalCode" placeholder="Code postal" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Adresse complète</label>
+                    <textarea id="address" name="address" rows="3" placeholder="Adresse" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Téléphone</label>
+                    <div class="phone-group">
+                        <select id="countryCode" name="countryCode">
+                            <option value="+33" selected>+33 (FR)</option>
+                        </select>
+                        <input type="tel" id="phone" name="phone" placeholder="Numéro" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="save-section">
+                    <button type="submit" class="save-btn">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="content-section" id="configuration">
+            <h2>Configuration</h2>
+            <div class="subtitle">Personnaliser les paramètres généraux</div>
+            <div class="submenu-content">
+                <a href="#" class="submenu-item" data-target="configuration-modes-paiement">
+                    <span class="icon payment"></span>
+                    Modes de paiement et Caisse
+                    <div class="description">Modes de paiement acceptés</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="configuration-abonnement">
+                    <span class="icon billing"></span>
+                    Abonnement et facturation
+                    <div class="description">Détails de facturation</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="configuration-kiosque-container">
+                    <span class="icon kiosk"></span>
+                    Kiosque
+                    <div class="description">Paramètres du kiosque</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-section" id="configuration-modes-paiement">
+            <a href="#" class="back-button" data-target="configuration">← Retour</a>
+            <h2>Modes de paiement et Caisse</h2>
+            <div class="subtitle">Définissez les modes de paiement acceptés</div>
+            <div class="submenu-content">
+                <a href="#" class="submenu-item" data-target="configuration-caisse-parametres">
+                    <span class="icon payment"></span>
+                    Paramètres de caisse
+                    <div class="description">Paramètres fiscaux</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="configuration-verification-compte">
+                    <span class="icon payment"></span>
+                    Vérification du compte
+                    <div class="description">Percevoir vos versements</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-section" id="configuration-caisse-parametres">
+            <a href="#" class="back-button" data-target="configuration-modes-paiement">← Retour</a>
+            <h2>Paramètres de caisse</h2>
+            <div class="subtitle">Paramètres fiscaux</div>
+            <div class="submenu-content">
+                <a href="#" class="submenu-item" data-target="configuration-taxes">
+                    <span class="icon payment"></span>
+                    Paramètres de taxes
+                    <div class="description">Gérer les taxes</div>
+                </a>
+                <a href="#" class="submenu-item" data-target="configuration-tickets">
+                    <span class="icon ticket"></span>
+                    Paramètres des tickets
+                    <div class="description">Personnaliser les tickets</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-section" id="configuration-verification-compte">
+            <a href="#" class="back-button" data-target="configuration-modes-paiement">← Retour</a>
+            <h2>Vérification du compte</h2>
+            <div class="subtitle">Commencer à percevoir vos versements</div>
+            <p>Contenu...</p>
+        </div>
+
+        <div class="content-section" id="configuration-taxes">
+            <a href="#" class="back-button" data-target="configuration-caisse-parametres">← Retour</a>
+            <h2>Paramètres de taxes</h2>
+            <div class="subtitle">Gérer les paramètres fiscaux</div>
+            <div class="tax-container">
+                <div class="tax-section">
+                    <h3>Taux de TVA</h3>
+                    <div id="tax-status-message" class="tax-status"></div>
+                    <div id="add-tax-form-container" style="display: none; margin-bottom: 15px;">
+                        <input type="number" id="new-tax-input" placeholder="Ex: 10.00" step="0.01" min="0" max="100">
+                        <button id="confirm-add-tax-btn">Ajouter</button>
+                        <button id="cancel-add-tax-btn">Annuler</button>
+                    </div>
+                    <div class="tax-rates"></div>
+                    <button class="add-tax-btn">+ Ajouter un taux de TVA</button>
+                </div>
+                <div class="ticket-section">
+                    <h3>Ticket</h3>
+                    <div class="ticket-items">
+                        <div class="ticket-item">
+                            <span>Accès Entrée sans Boisson</span>
+                            <select>
+                                <option value="5.5" selected>5.5%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                            </select>
+                        </div>
+                        <div class="ticket-item">
+                            <span>Accès Entrée + Alcool</span>
+                            <select>
+                                <option value="20" selected>20%</option>
+                            </select>
+                        </div>
+                        <div class="ticket-item">
+                            <span>Accès Heure Creuse</span>
+                            <select>
+                                <option value="20" selected>20%</option>
+                            </select>
+                        </div>
+                        <div class="ticket-item">
+                            <span>Accès Entrée + Soft</span>
+                            <select>
+                                <option value="10" selected>10%</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="vestiaire-section">
+                    <h3>Vestiaire</h3>
+                    <div class="vestiaire-items">
+                        <div class="vestiaire-item">
+                            <span>Vestiaire</span>
+                            <select>
+                                <option value="10" selected>10%</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="save-section">
+                    <button id="saveTaxSettingsBtn" class="save-btn">Enregistrer les paramètres</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="configuration-tickets">
+            <a href="#" class="back-button" data-target="configuration-caisse-parametres">← Retour</a>
+            <h2>Paramètres des tickets</h2>
+            <div class="subtitle">Personnaliser vos tickets</div>
+            <p>Contenu...</p>
+        </div>
+
+        <div class="content-section" id="configuration-abonnement">
+            <a href="#" class="back-button" data-target="configuration">← Retour</a>
+            <h2>Abonnement et facturation</h2>
+            <div class="subtitle">Détails de facturation</div>
+            <p>Contenu...</p>
+        </div>
+
+        <div class="content-section" id="configuration-kiosque-container">
+            <a href="#" class="back-button" data-target="configuration">← Retour</a>
+            <h2>Kiosque</h2>
+            <div class="subtitle">Configurer les paramètres du kiosque</div>
+            <div class="submenu-content">
+                <a href="#" class="submenu-item" data-target="configuration-kiosque">
+                    <span class="icon alert"></span>
+                    Alertes de capacité
+                    <div class="description">Alertes de capacité maximale</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-section" id="configuration-kiosque">
+            <a href="#" class="back-button" data-target="configuration-kiosque-container">← Retour</a>
+            <h2>Kiosque</h2>
+            <div class="subtitle">Configuration des alertes</div>
+            <div class="kiosque-section">
+                <h3>Alertes de Capacité Maximale</h3>
+                <div class="alerts-container">
+                    <div class="alert-column" id="alert-1">
+                        <h4>Alerte 1</h4>
+                        <div class="form-group">
+                            <label for="alert1-percentage">Pourcentage (%)</label>
+                            <input type="number" id="alert1-percentage" min="0" max="100" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="alert1-color">Couleur</label>
+                            <input type="color" id="alert1-color" value="#00FF00">
+                        </div>
+                        <div class="toggle-group">
+                            <label for="alert1-enabled">Activer</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="alert1-enabled">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </div>
+                        <div class="alert-visual alert-1" id="alert1-visual"></div>
+                    </div>
+                    <div class="alert-column" id="alert-2">
+                        <h4>Alerte 2</h4>
+                        <div class="form-group">
+                            <label for="alert2-percentage">Pourcentage (%)</label>
+                            <input type="number" id="alert2-percentage" min="0" max="100" value="75">
+                        </div>
+                        <div class="form-group">
+                            <label for="alert2-color">Couleur</label>
+                            <input type="color" id="alert2-color" value="#FFFF00">
+                        </div>
+                        <div class="toggle-group">
+                            <label for="alert2-enabled">Activer</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="alert2-enabled">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </div>
+                        <div class="alert-visual" id="alert2-visual"></div>
+                    </div>
+                    <div class="alert-column" id="alert-3">
+                        <h4>Alerte 3</h4>
+                        <div class="form-group">
+                            <label for="alert3-percentage">Pourcentage (%)</label>
+                            <input type="number" id="alert3-percentage" min="0" max="100" value="90">
+                        </div>
+                        <div class="form-group">
+                            <label for="alert3-color">Couleur</label>
+                            <input type="color" id="alert3-color" value="#FF0000">
+                        </div>
+                        <div class="toggle-group">
+                            <label for="alert3-enabled">Activer</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="alert3-enabled">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </div>
+                        <div class="alert-visual" id="alert3-visual"></div>
+                    </div>
+                </div>
+                <div class="save-section">
+                    <button id="saveKiosqueSettings">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="rapports">
+            <h2>Rapports/Statistiques</h2>
+            <div class="subtitle">Consultez vos statistiques</div>
+            <p>Contenu...</p>
+        </div>
+
+        <div class="content-section kiosk-container" id="kiosk-view" style="display: none;">
+    <button class="toggle-back-btn" id="toggle-back-btn">Passer au Tableau de Bord</button>
+    <div class="kiosk-header">
+        <!-- Le contenu sera généré dynamiquement par updateKioskHeader() -->
+    </div>
+            <div class="kiosk-items-container">
+                <div class="kiosk-category" id="access-soiree-kiosk">
+                    <h2>Accès Soirée</h2>
+                    <div id="access-items-kiosk"></div>
+                </div>
+                <div class="kiosk-separator"></div>
+                <div class="kiosk-category" id="pure-soiree-kiosk">
+                    <h2>Pure Soirée</h2>
+                    <div id="pure-items-kiosk"></div>
+                </div>
+            </div>
+            <div class="kiosk-total-section">
+                <div class="kiosk-total-row">
+                    <div id="kiosk-total-discount"></div>
+                    <div id="kiosk-total-price">0€</div>
+                </div>
+                <button id="kiosk-checkout-btn" class="kiosk-checkout-btn" disabled>VALIDER</button>
+            </div>
+        </div>
+
+        <div id="custom-confirmation-modal" class="unified-confirmation-modal">
+            <div class="modal-content">
+                <p id="modal-message" class="modal-message">Message de confirmation</p>
+                <div class="modal-buttons">
+                    <button id="modal-button-ok" class="modal-btn btn-confirm">Oui</button>
+                    <button id="modal-button-cancel" class="modal-btn btn-cancel">Non</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/gestion-codes-jour.js"></script>
+    <script src="/js/profile.js"></script>
+    <script src="/js/configuration.js"></script>
+    <script src="/js/gestion-capacite.js"></script>
+    <script src="/js/gestion-horaires.js"></script>
+    <script src="/js/genre.js"></script>
+    <script src="/js/gestion-entrees.js"></script>
+    <script src="/js/gestion-vestiaires.js"></script>
+    <script src="/js/vestiaire-kiosque.js"></script>
+    <script src="/js/interface-app.js"></script>
+</body>
+</html>
