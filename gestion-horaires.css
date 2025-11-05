@@ -1,0 +1,823 @@
+/* ========================================
+   VARIABLES CSS (Globales, non modifiées)
+   ======================================== */
+:root {
+    /* Couleurs principales */
+    --color-primary: #9733EE;
+    --color-primary-light: #ad48ff;
+    --color-secondary: #DA22FF;
+    --color-secondary-light: #e83eff;
+    --color-accent: #00D4FF;
+    --color-danger: #f44336;
+    
+    /* Couleurs de fond */
+    --bg-dark: #1a1a1a;
+    --bg-card: #2c2c2c;
+    --bg-input: #333;
+    --bg-input-hover: #3a3a3a;
+    --bg-input-focus: #444;
+    --bg-button: #444;
+    --bg-button-hover: #555;
+    
+    /* Couleurs de texte */
+    --text-primary: #fff;
+    --text-secondary: #aaa;
+    --text-muted: #666;
+    
+    /* Bordures */
+    --border-color: #333;
+    --border-color-light: #444;
+    
+    /* Espacements */
+    --spacing-xs: 5px;
+    --spacing-sm: 8px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 40px;
+    
+    /* Transitions */
+    --transition-default: all 0.3s ease;
+    --transition-fast: all 0.2s ease;
+    
+    /* Ombres */
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+    --shadow-primary: 0 4px 15px rgba(151, 51, 238, 0.3);
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #9733EE, #DA22FF);
+    --gradient-header: linear-gradient(135deg, #1c2526 0%, #2a3b4c 100%);
+    --gradient-dark: linear-gradient(135deg, #2a3b4c, #1c2526);
+    --gradient-button: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+}
+
+/* ========================================
+   STYLES GLOBAUX (Globales, non modifiées)
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+}
+
+/* ========================================
+   HEADER ET NAVIGATION (SCOPÉS)
+   ======================================== */
+.gestion-horaires .header {
+    background: var(--gradient-header);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.gestion-horaires .back-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--bg-button);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: var(--transition-default);
+    font-size: 14px;
+}
+
+.gestion-horaires .back-btn:hover {
+    background: var(--bg-button-hover);
+    box-shadow: 0 0 10px var(--color-primary), 0 0 5px var(--color-accent);
+    transform: translateY(-2px);
+}
+
+.gestion-horaires .title-container {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+}
+
+.gestion-horaires .gradient-title {
+    font-size: 2.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+}
+
+.gestion-horaires .subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* ========================================
+   CONTENEUR PRINCIPAL (SCOPÉ)
+   ======================================== */
+.gestion-horaires .container {
+    max-width: 1200px;
+    margin: var(--spacing-xl) auto;
+    padding: 0 var(--spacing-lg);
+}
+
+/* ========================================
+   TABLE DES HORAIRES (SCOPÉE)
+   ======================================== */
+.gestion-horaires .schedule-table {
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.gestion-horaires table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.gestion-horaires thead {
+    background: var(--gradient-dark);
+}
+
+.gestion-horaires th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.gestion-horaires tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition-default);
+}
+
+.gestion-horaires tbody tr:hover {
+    background: rgba(151, 51, 238, 0.1);
+}
+
+.gestion-horaires td {
+    padding: var(--spacing-md);
+    font-size: 14px;
+}
+
+.gestion-horaires td:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   INPUTS ET CONTRÔLES (SCOPÉS)
+   ======================================== */
+.gestion-horaires input[type="time"] {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color-light);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: var(--transition-default);
+    cursor: pointer;
+}
+
+.gestion-horaires input[type="time"]:focus {
+    background: var(--bg-input-focus);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(151, 51, 238, 0.2);
+    outline: none;
+}
+
+.gestion-horaires input[type="time"]:hover {
+    background: var(--bg-input-hover);
+}
+
+.gestion-horaires input[type="time"]:disabled {
+    background: #222;
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ========================================
+   COLONNES DE CREUSES (SCOPÉES)
+   ======================================== */
+.gestion-horaires .time-slot-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+}
+
+.gestion-horaires .time-separator {
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+.gestion-horaires .time-inputs-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ========================================
+   BOUTONS D'ACTION (SCOPÉS)
+   ======================================== */
+.gestion-horaires .action-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-left: var(--spacing-md);
+}
+
+.gestion-horaires .btn-copy, 
+.gestion-horaires .btn-paste, 
+.gestion-horaires .btn-delete {
+    padding: 0;
+    background: var(--gradient-button);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-default);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    position: relative;
+    overflow: hidden;
+}
+
+.gestion-horaires .btn-copy::before, 
+.gestion-horaires .btn-paste::before, 
+.gestion-horaires .btn-delete::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.gestion-horaires .btn-copy:hover::before, 
+.gestion-horaires .btn-paste:hover::before {
+    left: 100%;
+}
+
+.gestion-horaires .btn-copy:hover, 
+.gestion-horaires .btn-paste:hover, 
+.gestion-horaires .btn-delete:hover {
+    background: linear-gradient(135deg, #333, #2a2a2a);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.gestion-horaires .btn-copy:hover, 
+.gestion-horaires .btn-paste:hover {
+    border-color: rgba(151, 51, 238, 0.3);
+}
+
+.gestion-horaires .btn-delete:hover {
+    border-color: rgba(244, 67, 54, 0.4);
+}
+
+.gestion-horaires .btn-copy:active, 
+.gestion-horaires .btn-paste:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.gestion-horaires .btn-copy::after,
+.gestion-horaires .btn-paste::after,
+.gestion-horaires .btn-delete::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+    transition: filter var(--transition-default);
+}
+
+/* Icône copier */
+.gestion-horaires .btn-copy::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.gestion-horaires .btn-copy:hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* Icône coller */
+.gestion-horaires .btn-paste::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'%3E%3C/path%3E%3Crect x='8' y='2' width='8' height='4' rx='1' ry='1'%3E%3C/rect%3E%3Cline x1='12' y1='11' x2='12' y2='17'%3E%3C/line%3E%3Cline x1='9' y1='14' x2='15' y2='14'%3E%3C/line%3E%3C/svg%3E");
+}
+
+.gestion-horaires .btn-paste:hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'%3E%3C/path%3E%3Crect x='8' y='2' width='8' height='4' rx='1' ry='1'%3E%3C/rect%3E%3Cline x1='12' y1='11' x2='12' y2='17'%3E%3C/line%3E%3Cline x1='9' y1='14' x2='15' y2='14'%3E%3C/line%3E%3C/svg%3E");
+}
+
+/* Icône supprimer */
+.gestion-horaires .btn-delete::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'%3E%3C/polyline%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.gestion-horaires .btn-delete:hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f44336' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'%3E%3C/polyline%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.gestion-horaires .btn-copy.copied, 
+.gestion-horaires .btn-paste.pasted {
+    background: linear-gradient(135deg, rgba(151, 51, 238, 0.2), rgba(218, 34, 255, 0.2));
+    border-color: rgba(151, 51, 238, 0.5);
+    animation: pulse 0.5s ease;
+}
+
+.gestion-horaires .btn-copy.copied::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239733EE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.gestion-horaires .btn-copy.with-text, 
+.gestion-horaires .btn-paste.with-text {
+    width: auto;
+    padding: 6px 12px;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.gestion-horaires .btn-copy.with-text::after, 
+.gestion-horaires .btn-paste.with-text::after {
+    position: relative;
+    margin-left: 4px;
+}
+
+/* ========================================
+   BOUTON SAUVEGARDER (SCOPÉ)
+   ======================================== */
+.gestion-horaires .save-container {
+    margin-top: var(--spacing-xl);
+    text-align: center;
+    padding: var(--spacing-lg) 0;
+}
+
+.gestion-horaires .save-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    background: var(--gradient-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-default);
+    box-shadow: var(--shadow-primary);
+    margin-top: var(--spacing-xl);
+}
+
+.gestion-horaires .save-btn:hover {
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary-light));
+    box-shadow: 0 6px 20px rgba(151, 51, 238, 0.4);
+    transform: translateY(-2px);
+}
+
+.gestion-horaires .save-btn:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   TOOLTIPS (SCOPÉS)
+   ======================================== */
+.gestion-horaires .tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.gestion-horaires .tooltip-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    background: var(--bg-button-hover);
+    border-radius: 50%;
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    cursor: help;
+    margin-left: var(--spacing-sm);
+    transition: background-color var(--transition-default), transform var(--transition-fast);
+    vertical-align: middle;
+}
+
+.gestion-horaires .tooltip-icon:hover {
+    background: var(--gradient-primary);
+    transform: scale(1.1);
+}
+
+.gestion-horaires .tooltip-container .tooltip {
+    position: absolute;
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-dark));
+    color: var(--text-primary);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 280px;
+    white-space: normal;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-default), visibility var(--transition-default);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(151, 51, 238, 0.2);
+    top: 50%;
+    left: calc(100% + 10px);
+    transform: translateY(-50%);
+}
+
+.gestion-horaires .tooltip::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 8px 6px 0;
+    border-color: transparent var(--bg-card) transparent transparent;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.gestion-horaires .tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* ========================================
+   MODAL DE CONFIRMATION (Laissée globale car potentiellement utilisée partout)
+   ======================================== */
+.unified-confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+}
+
+.unified-confirmation-modal.show {
+    display: flex;
+    opacity: 1;
+    animation: fadeIn var(--transition-default) forwards;
+}
+
+.unified-confirmation-modal.closing {
+    animation: fadeOut var(--transition-default) forwards;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-dark));
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(151, 51, 238, 0.3);
+    max-width: 90%;
+    width: 400px;
+    animation: scaleIn var(--transition-default);
+}
+
+.modal-message {
+    color: var(--text-primary);
+    font-size: 16px;
+    margin-bottom: 25px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-default);
+    min-width: 80px;
+}
+
+.btn-confirm {
+    background: var(--gradient-primary);
+    color: var(--text-primary);
+}
+
+.btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(151, 51, 238, 0.4);
+}
+
+.btn-cancel {
+    background: var(--bg-button);
+    color: var(--text-primary);
+}
+
+.btn-cancel:hover {
+    background: var(--bg-button-hover);
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   ANIMATIONS (Globales, non modifiées)
+   ======================================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpMobile {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN (SCOPÉ)
+   ======================================== */
+
+/* Tablettes (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+    .gestion-horaires .container {
+        padding: 0 15px;
+    }
+    
+    .gestion-horaires .gradient-title {
+        font-size: 2rem;
+    }
+    
+    .gestion-horaires table {
+        font-size: 13px;
+    }
+    
+    .gestion-horaires th, .gestion-horaires td {
+        padding: 12px;
+    }
+    
+    .gestion-horaires input[type="time"] {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .gestion-horaires .tooltip {
+        max-width: 240px;
+        font-size: 12px;
+        padding: 10px 14px;
+        top: calc(100% + 10px) !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+    }
+    
+    .gestion-horaires .tooltip::before {
+        border-width: 0 6px 8px 6px !important;
+        border-color: transparent transparent var(--bg-card) transparent !important;
+        bottom: 100% !important;
+        left: 50% !important;
+        right: auto !important;
+        top: auto !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+/* Mobiles (max 768px) */
+@media screen and (max-width: 768px) {
+    .gestion-horaires .header {
+        padding: 15px;
+    }
+    
+    .gestion-horaires .gradient-title {
+        font-size: 1.5rem;
+    }
+    
+    .gestion-horaires .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .gestion-horaires .container {
+        margin: 20px auto;
+    }
+    
+    .gestion-horaires .schedule-table {
+        overflow-x: auto;
+    }
+    
+    .gestion-horaires table {
+        min-width: 600px;
+    }
+    
+    .gestion-horaires th, .gestion-horaires td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+    
+    .gestion-horaires input[type="time"] {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+    
+    .gestion-horaires .time-inputs-wrapper {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .gestion-horaires .action-buttons {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    
+    .gestion-horaires .btn-copy, 
+    .gestion-horaires .btn-paste, 
+    .gestion-horaires .btn-delete {
+        width: 28px;
+        height: 28px;
+        padding: 4px;
+    }
+    
+    .gestion-horaires .tooltip-container .tooltip {
+        position: fixed;
+        max-width: 90vw;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: auto !important;
+        bottom: 20px !important;
+        right: auto !important;
+        font-size: 14px;
+        padding: 15px;
+        border-radius: 12px;
+    }
+    
+    .gestion-horaires .tooltip::before {
+        display: none;
+    }
+    
+    .gestion-horaires .tooltip.visible {
+        animation: slideUpMobile var(--transition-default) forwards;
+    }
+    
+    .gestion-horaires .save-btn {
+        width: 100%;
+        padding: 12px;
+    }
+}
+
+/* Petits mobiles (max 480px) */
+@media screen and (max-width: 480px) {
+    .gestion-horaires .gradient-title {
+        font-size: 1.3rem;
+    }
+    
+    .gestion-horaires .back-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .gestion-horaires th {
+        font-size: 11px;
+        padding: 8px 5px;
+    }
+    
+    .gestion-horaires td {
+        font-size: 11px;
+        padding: 8px 5px;
+    }
+    
+    .gestion-horaires input[type="time"] {
+        width: 100%;
+    }
+    
+    .gestion-horaires .tooltip {
+        max-width: calc(100vw - 40px);
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    .gestion-horaires .tooltip-icon {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: 11px;
+        margin-left: 4px;
+    }
+    
+    /* Les règles pour .modal-content sont globales, donc pas de préfixe */
+    .modal-content {
+        width: calc(100% - 40px);
+        padding: 20px;
+    }
+    
+    .modal-message {
+        font-size: 14px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-btn {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   UTILITAIRES (Globales, non modifiées)
+   ======================================== */
+body.modal-open {
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ========================================
+   ACCESSIBILITÉ (Globale, non modifiée)
+   ======================================== */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   SCROLLBAR PERSONNALISÉE (Globale, non modifiée)
+   ======================================== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-button);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-button-hover);
+}
