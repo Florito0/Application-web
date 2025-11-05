@@ -1,0 +1,741 @@
+/* ========================================
+   CONFIGURATION.CSS
+   Styles isolés et optimisés pour la configuration
+   Version complète avec tous les styles nécessaires
+   ======================================== */
+
+/* ===== RESET ET POLICE GLOBALE ===== */
+#configuration-taxes,
+#configuration-kiosque,
+#configuration-caisse-parametres {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Force le texte en blanc partout dans la configuration */
+#configuration-taxes,
+#configuration-taxes *,
+#configuration-kiosque,
+#configuration-kiosque * {
+    color: #ffffff;
+}
+
+#configuration-taxes h2,
+#configuration-taxes h3,
+#configuration-taxes h4,
+#configuration-taxes label,
+#configuration-taxes span,
+#configuration-kiosque h2,
+#configuration-kiosque h3,
+#configuration-kiosque h4,
+#configuration-kiosque label {
+    color: #ffffff !important;
+}
+
+/* ===== CONTENEUR PRINCIPAL TAXES ===== */
+#configuration-taxes .tax-container {
+    display: grid;
+    gap: 30px;
+    padding: 20px;
+}
+
+/* ===== SECTION TAUX DE TVA ===== */
+#configuration-taxes .tax-section {
+    margin-bottom: 30px;
+}
+
+#configuration-taxes .tax-section h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    color: #ffffff;
+}
+
+#configuration-taxes .tax-rates {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#configuration-taxes .tax-rate-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #2c2c2c;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#configuration-taxes .tax-rate-item:hover {
+    background: #333;
+    border-color: rgba(151, 51, 238, 0.3);
+    transform: translateX(3px);
+}
+
+#configuration-taxes .tax-rate-item .tax-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+/* ===== BOUTONS DE SUPPRESSION - VERSION UNIFIÉE COMPLÈTE ===== */
+#configuration-taxes .delete-btn,
+#configuration-taxes .tax-rate-item .delete-btn {
+    background: none !important;
+    border: none !important;
+    color: #ff5555 !important;
+    cursor: pointer !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+#configuration-taxes .delete-btn:hover,
+#configuration-taxes .tax-rate-item .delete-btn:hover {
+    background: rgba(255, 85, 85, 0.1) !important;
+    color: #ff7777 !important;
+    transform: scale(1.1) !important;
+}
+
+/* Icône trash - ciblage unifié */
+#configuration-taxes .delete-btn .icon.trash,
+#configuration-taxes .tax-rate-item .delete-btn .icon.trash {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    display: inline-block;
+}
+
+/* Barre horizontale du haut de la poubelle */
+#configuration-taxes .delete-btn .icon.trash::before,
+#configuration-taxes .tax-rate-item .delete-btn .icon.trash::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 2px !important;
+    left: 2px !important;
+    width: 12px !important;
+    height: 1px !important;
+    background: #ff4444 !important;
+}
+
+/* Corps de la poubelle */
+#configuration-taxes .delete-btn .icon.trash::after,
+#configuration-taxes .tax-rate-item .delete-btn .icon.trash::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 6px !important;
+    left: 0 !important;
+    width: 12px !important;
+    height: 8px !important;
+    border: 2px solid #ff4444 !important;
+    border-top: none !important;
+    border-radius: 0 0 4px 4px !important;
+    background: transparent !important;
+}
+
+/* Effet hover sur l'icône */
+#configuration-taxes .delete-btn:hover .icon.trash::before,
+#configuration-taxes .delete-btn:hover .icon.trash::after {
+    color: #ff7777 !important;
+}
+
+/* ===== FORMULAIRE D'AJOUT DE TVA ===== */
+#configuration-taxes #add-tax-form-container {
+    display: flex;
+    gap: 10px;
+    background: #2c2c2c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #444;
+}
+
+#configuration-taxes #add-tax-form-container input {
+    flex-grow: 1;
+    padding: 10px 12px;
+    background: #333;
+    border: 1px solid #555;
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#configuration-taxes #add-tax-form-container input:focus {
+    outline: none;
+    border-color: #9733EE;
+    box-shadow: 0 0 8px rgba(151, 51, 238, 0.3);
+}
+
+#configuration-taxes #add-tax-form-container input::placeholder {
+    color: #888;
+}
+
+#configuration-taxes #add-tax-form-container button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #555;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+#configuration-taxes #add-tax-form-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#configuration-taxes #confirm-add-tax-btn {
+    background: linear-gradient(135deg, #2a7a44, #34a853);
+}
+
+#configuration-taxes #confirm-add-tax-btn:hover {
+    background: linear-gradient(135deg, #34a853, #2a7a44);
+}
+
+#configuration-taxes #cancel-add-tax-btn {
+    background: #666;
+}
+
+#configuration-taxes #cancel-add-tax-btn:hover {
+    background: #777;
+}
+
+/* ===== BOUTON PRINCIPAL AJOUTER TVA ===== */
+#configuration-taxes .add-tax-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #444;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+#configuration-taxes .add-tax-btn:hover {
+    background: linear-gradient(135deg, #9733EE, #DA22FF);
+    border-color: #9733EE;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(151, 51, 238, 0.3);
+}
+
+/* ===== MESSAGE DE STATUT ===== */
+#configuration-taxes .tax-status {
+    color: #a0a0a0;
+    font-size: 0.9em;
+    font-style: italic;
+    text-align: left;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 4.5s linear(0.98 0%, 1 100%);
+    margin-left: 5px;
+    margin-bottom: 10px;
+}
+
+#configuration-taxes .tax-status.visible {
+    height: 25px;
+    opacity: 1;
+}
+
+/* ===== SECTION TICKETS ===== */
+#configuration-taxes .ticket-section {
+    margin-bottom: 30px;
+}
+
+#configuration-taxes .ticket-section h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    color: #ffffff;
+}
+
+#configuration-taxes .ticket-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#configuration-taxes .ticket-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #2c2c2c;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#configuration-taxes .ticket-item:hover {
+    background: #333;
+    border-color: rgba(151, 51, 238, 0.3);
+}
+
+#configuration-taxes .ticket-item span {
+    font-size: 15px;
+    color: #ffffff;
+    font-weight: 400;
+}
+
+#configuration-taxes .ticket-item select {
+    padding: 8px 12px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: 120px;
+    transition: all 0.3s ease;
+}
+
+#configuration-taxes .ticket-item select:hover {
+    border-color: #9733EE;
+}
+
+#configuration-taxes .ticket-item select:focus {
+    outline: none;
+    border-color: #DA22FF;
+    box-shadow: 0 0 8px rgba(218, 34, 255, 0.3);
+}
+
+/* ===== SECTION VESTIAIRE ===== */
+#configuration-taxes .vestiaire-section {
+    margin-bottom: 30px;
+}
+
+#configuration-taxes .vestiaire-section h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    color: #ffffff;
+}
+
+#configuration-taxes .vestiaire-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#configuration-taxes .vestiaire-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #2c2c2c;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#configuration-taxes .vestiaire-item:hover {
+    background: #333;
+    border-color: rgba(151, 51, 238, 0.3);
+}
+
+#configuration-taxes .vestiaire-item span {
+    font-size: 15px;
+    color: #ffffff;
+    font-weight: 400;
+}
+
+#configuration-taxes .vestiaire-item select {
+    padding: 8px 12px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: 120px;
+    transition: all 0.3s ease;
+}
+
+#configuration-taxes .vestiaire-item select:hover {
+    border-color: #9733EE;
+}
+
+#configuration-taxes .vestiaire-item select:focus {
+    outline: none;
+    border-color: #DA22FF;
+    box-shadow: 0 0 8px rgba(218, 34, 255, 0.3);
+}
+
+/* ===== SECTION SAUVEGARDE ===== */
+#configuration-taxes .save-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+#configuration-taxes .save-section button {
+    padding: 14px 36px;
+    background: linear-gradient(90deg, #9733EE, #DA22FF);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(151, 51, 238, 0.4);
+    letter-spacing: 0.5px;
+}
+
+#configuration-taxes .save-section button:hover {
+    background: linear-gradient(90deg, #DA22FF, #9733EE);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(151, 51, 238, 0.6);
+}
+
+/* ===== ALERTES DE SUCCÈS ===== */
+.tax-success-alert {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    color: white !important;
+    padding: 15px 20px !important;
+    border-radius: 10px !important;
+    z-index: 9999 !important;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4) !important;
+    animation: slideInAlert 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tax-success-alert.fade-out {
+    animation: fadeOutAlert 0.4s ease-in forwards !important;
+}
+
+@keyframes slideInAlert {
+    from { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+}
+
+@keyframes fadeOutAlert {
+    from { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+    to { 
+        transform: translateX(120%); 
+        opacity: 0; 
+    }
+}
+
+/* ===== CONFIGURATION KIOSQUE - SECTION PRINCIPALE ===== */
+#configuration-kiosque .kiosque-section {
+    display: grid;
+    gap: 30px;
+    background: linear-gradient(145deg, #1a1a1a, #222222);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+}
+
+#configuration-kiosque .kiosque-section h3 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+#configuration-kiosque .alerts-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+#configuration-kiosque .alert-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: rgba(40, 40, 40, 0.7);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#configuration-kiosque .alert-column:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(151, 51, 238, 0.3);
+}
+
+#configuration-kiosque .alert-column h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+}
+
+/* ===== FORM GROUP - STYLES GÉNÉRIQUES POUR KIOSQUE ===== */
+#configuration-kiosque .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#configuration-kiosque .form-group label {
+    font-size: 14px;
+    color: #e0e0e0;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+#configuration-kiosque .form-group input[type="number"] {
+    padding: 12px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#configuration-kiosque .form-group input[type="number"]:focus {
+    border-color: #DA22FF;
+    box-shadow: 0 0 8px rgba(218, 34, 255, 0.4);
+    outline: none;
+}
+
+#configuration-kiosque .form-group input[type="color"] {
+    padding: 2px;
+    height: 44px;
+    width: 100%;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#configuration-kiosque .form-group input[type="color"]:hover {
+    border-color: #DA22FF;
+}
+
+/* ===== TOGGLE GROUP - COMPOSANTS TOGGLE ===== */
+#configuration-kiosque .toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+#configuration-kiosque .toggle-group label {
+    font-size: 14px;
+    color: #e0e0e0;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+}
+
+#configuration-kiosque .toggle-group label:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2c2c2c;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#configuration-kiosque .toggle-group label:hover::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #2c2c2c transparent transparent transparent;
+    z-index: 10;
+}
+
+#configuration-kiosque .toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 24px;
+}
+
+#configuration-kiosque .toggle-switch input[type="checkbox"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+#configuration-kiosque .toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #444;
+    transition: background-color 0.3s ease;
+    border-radius: 24px;
+}
+
+#configuration-kiosque .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #ffffff;
+    transition: transform 0.3s ease;
+    border-radius: 50%;
+}
+
+#configuration-kiosque .toggle-switch input:checked + .toggle-slider {
+    background: linear-gradient(90deg, #9733EE, #DA22FF);
+}
+
+#configuration-kiosque .toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* ===== ALERT VISUAL - VISUALISATION DES ALERTES ===== */
+#configuration-kiosque .alert-visual {
+    width: 70px;
+    height: 130px;
+    border: 2px solid #444;
+    border-radius: 12px;
+    margin: 10px auto;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    background: #2a2a2a;
+    --alert-color: #444;
+}
+
+#configuration-kiosque .alert-visual.active {
+    border-color: var(--alert-color);
+    animation: glowPulse 2s infinite ease-in-out;
+}
+
+#configuration-kiosque .alert-visual.alert-1.active {
+    animation-duration: 2.5s;
+}
+
+#configuration-kiosque .alert-visual.alert-2.active {
+    animation-duration: 2s;
+}
+
+#configuration-kiosque .alert-visual.alert-3.active {
+    animation-duration: 1.5s;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--alert-color), 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 15px var(--alert-color), 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+}
+
+#configuration-kiosque .alert-column.disabled {
+    opacity: 0.6;
+}
+
+#configuration-kiosque .alert-column.disabled .toggle-group,
+#configuration-kiosque .alert-column.disabled .toggle-switch {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ===== SAVE SECTION KIOSQUE ===== */
+#configuration-kiosque .save-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+#configuration-kiosque .save-section button {
+    padding: 14px 36px;
+    background: linear-gradient(90deg, #9733EE, #DA22FF);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(151, 51, 238, 0.4);
+    letter-spacing: 0.5px;
+}
+
+#configuration-kiosque .save-section button:hover {
+    background: linear-gradient(90deg, #DA22FF, #9733EE);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(151, 51, 238, 0.6);
+}
+
+/* ===== MESSAGE VIDE ===== */
+#configuration-taxes p.empty-list {
+    color: #888;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    #configuration-taxes .tax-rate-item,
+    #configuration-taxes .ticket-item,
+    #configuration-taxes .vestiaire-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    #configuration-taxes .ticket-item select,
+    #configuration-taxes .vestiaire-item select {
+        width: 100%;
+    }
+    
+    #configuration-kiosque .alerts-container {
+        grid-template-columns: 1fr;
+    }
+}
