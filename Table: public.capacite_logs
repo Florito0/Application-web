@@ -1,0 +1,26 @@
+-- Table: public.capacite_logs
+
+-- DROP TABLE IF EXISTS public.capacite_logs;
+
+CREATE TABLE IF NOT EXISTS public.capacite_logs
+(
+    id integer NOT NULL DEFAULT nextval('capacite_logs_id_seq'::regclass),
+    user_id integer NOT NULL,
+    capacite_id integer NOT NULL,
+    action character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    "timestamp" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT capacite_logs_pkey PRIMARY KEY (id),
+    CONSTRAINT capacite_logs_capacite_id_fkey FOREIGN KEY (capacite_id)
+        REFERENCES public.capacite (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT capacite_logs_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.capacite_logs
+    OWNER to postgres;
