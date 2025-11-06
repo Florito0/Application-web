@@ -1,0 +1,71 @@
+-- Table: public.vestiaires
+
+-- DROP TABLE IF EXISTS public.vestiaires;
+
+CREATE TABLE IF NOT EXISTS public.vestiaires
+(
+    id integer NOT NULL DEFAULT nextval('vestiaires_id_seq'::regclass),
+    numero_vestiaire character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    statut character varying(20) COLLATE pg_catalog."default" DEFAULT 'disponible'::character varying,
+    entree_id integer,
+    discotheque_id integer,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer,
+    taxe_id integer,
+    montant_total numeric(10,2) DEFAULT 0,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT vestiaires_pkey PRIMARY KEY (id),
+    CONSTRAINT vestiaires_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT vestiaires_entree_id_fkey FOREIGN KEY (entree_id)
+        REFERENCES public.entrees (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT vestiaires_taxe_id_fkey FOREIGN KEY (taxe_id)
+        REFERENCES public.taxes (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT vestiaires_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.vestiaires
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.vestiaires.numero_vestiaire
+    IS 'Numéro unique généré automatiquement au format YYYYMMDD-XXXX';
+
+COMMENT ON COLUMN public.vestiaires.montant_total
+    IS 'Montant total du vestiaire calculé à partir des articles';
+-- Index: idx_vestiaires_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_vestiaires_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_vestiaires_discotheque_id
+    ON public.vestiaires USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_vestiaires_entree_id
+
+-- DROP INDEX IF EXISTS public.idx_vestiaires_entree_id;
+
+CREATE INDEX IF NOT EXISTS idx_vestiaires_entree_id
+    ON public.vestiaires USING btree
+    (entree_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+-- Trigger: update_vestiaires_updated_at
+
+-- DROP TRIGGER IF EXISTS update_vestiaires_updated_at ON public.vestiaires;
+
+CREATE OR REPLACE TRIGGER update_vestiaires_updated_at
+    BEFORE UPDATE 
+    ON public.vestiaires
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
