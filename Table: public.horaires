@@ -1,0 +1,61 @@
+-- Table: public.horaires
+
+-- DROP TABLE IF EXISTS public.horaires;
+
+CREATE TABLE IF NOT EXISTS public.horaires
+(
+    id integer NOT NULL DEFAULT nextval('horaires_id_seq'::regclass),
+    discotheque_id integer NOT NULL,
+    jour_semaine character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    heure_debut time without time zone NOT NULL,
+    heure_fin time without time zone NOT NULL,
+    slot_numero integer DEFAULT 1,
+    user_id integer NOT NULL,
+    CONSTRAINT horaires_pkey PRIMARY KEY (id),
+    CONSTRAINT unique_horaire_discotheque_jour_slot UNIQUE (discotheque_id, jour_semaine, slot_numero),
+    CONSTRAINT ux_horaires_user_jour_slot UNIQUE (user_id, jour_semaine, slot_numero),
+    CONSTRAINT horaires_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT horaires_user_fk FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.horaires
+    OWNER to postgres;
+
+ALTER TABLE IF EXISTS public.horaires
+    ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE IF EXISTS public.horaires
+    FORCE ROW LEVEL SECURITY;
+
+REVOKE ALL ON TABLE public.horaires FROM app_user;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE public.horaires TO app_user;
+
+GRANT ALL ON TABLE public.horaires TO postgres;
+-- Index: idx_horaires_discotheque_jour_slot
+
+-- DROP INDEX IF EXISTS public.idx_horaires_discotheque_jour_slot;
+
+CREATE INDEX IF NOT EXISTS idx_horaires_discotheque_jour_slot
+    ON public.horaires USING btree
+    (discotheque_id ASC NULLS LAST, jour_semaine COLLATE pg_catalog."default" ASC NULLS LAST, slot_numero ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- POLICY: horaires_isolation
+
+-- DROP POLICY IF EXISTS horaires_isolation ON public.horaires;
+
+CREATE POLICY horaires_isolation
+    ON public.horaires
+    AS PERMISSIVE
+    FOR ALL
+    TO public
+    USING ((user_id = (current_setting('app.user_id'::text, true))::integer))
+    WITH CHECK ((user_id = (current_setting('app.user_id'::text, true))::integer));
