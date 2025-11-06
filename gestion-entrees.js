@@ -565,20 +565,48 @@ if (!pureItemsGrouped[category]) {
     }
     
     updateKioskTotal() {
-        let total = 0;
-        let discountTotal = 0;
-        let itemCount = 0;
-        for (const item of Object.values(this.kioskItems)) {
-            total += (item.price || 0) * item.qty;
-            itemCount += item.qty;
-            if (item.discount > 0 && item.qty > 1) {
-                discountTotal += (item.qty - 1) * item.discount;
-            }
+    let total = 0;
+    let discountTotal = 0;
+    let itemCount = 0;
+    let orderHTML = '';
+    
+    for (const item of Object.values(this.kioskItems)) {
+        total += (item.price || 0) * item.qty;
+        itemCount += item.qty;
+        
+        // Calcul de la réduction
+        if (item.discount > 0 && item.qty > 1) {
+            discountTotal += (item.qty - 1) * item.discount;
         }
-        this.kioskTotalPrice.textContent = `${(total - discountTotal).toFixed(2)}€`;
-        this.kioskTotalDiscount.textContent = discountTotal > 0 ? `(Réduc. bouteille suppl.: -${discountTotal.toFixed(2)}€)` : '';
-        this.kioskCheckoutBtn.disabled = itemCount === 0;
+        
+        // Construction du récapitulatif (seulement pour les articles avec qty > 0)
+        if (item.qty > 0) {
+            const itemTotal = (item.price || 0) * item.qty;
+            orderHTML += `
+                <div class="order-line">
+                    <span class="order-qty">${item.qty}</span>
+                    <span class="order-name">${this.sanitizeInput(item.name)}</span>
+                    <span class="order-price">${itemTotal.toFixed(2)}€</span>
+                </div>
+            `;
+        }
     }
+    
+    // Mise à jour du récapitulatif
+    const orderSummary = document.getElementById('kiosk-order-summary');
+    if (orderSummary) {
+        if (orderHTML) {
+            orderSummary.innerHTML = orderHTML;
+        } else {
+            orderSummary.innerHTML = '<div class="order-empty">Aucun article sélectionné</div>';
+        }
+    }
+    
+    // Mise à jour du total et de la réduction
+    this.kioskTotalPrice.textContent = `${(total - discountTotal).toFixed(2)}€`;
+    this.kioskTotalDiscount.textContent = discountTotal > 0 ? `(Réduc. bouteille suppl.: -${discountTotal.toFixed(2)}€)` : '';
+    this.kioskCheckoutBtn.disabled = itemCount === 0;
+}
 
     handleKioskCheckout() {
         let summary = 'Récapitulatif de la commande :\n';
