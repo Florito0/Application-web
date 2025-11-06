@@ -1,0 +1,23 @@
+-- Table: public.configurations
+
+-- DROP TABLE IF EXISTS public.configurations;
+
+CREATE TABLE IF NOT EXISTS public.configurations
+(
+    id integer NOT NULL DEFAULT nextval('configurations_id_seq'::regclass),
+    discotheque_id integer NOT NULL,
+    kiosque_alerts jsonb,
+    updated_at timestamp with time zone DEFAULT now(),
+    alerts_config jsonb DEFAULT '{}'::jsonb,
+    CONSTRAINT configurations_pkey PRIMARY KEY (id),
+    CONSTRAINT configurations_discotheque_id_key UNIQUE (discotheque_id),
+    CONSTRAINT configurations_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.configurations
+    OWNER to postgres;
