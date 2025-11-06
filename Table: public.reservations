@@ -1,0 +1,46 @@
+-- Table: public.reservations
+
+-- DROP TABLE IF EXISTS public.reservations;
+
+CREATE TABLE IF NOT EXISTS public.reservations
+(
+    id integer NOT NULL DEFAULT nextval('reservations_id_seq'::regclass),
+    client_nom character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    client_email character varying(100) COLLATE pg_catalog."default",
+    date_reservation timestamp with time zone NOT NULL,
+    nombre_personnes integer NOT NULL,
+    statut character varying(20) COLLATE pg_catalog."default" DEFAULT 'en_attente'::character varying,
+    discotheque_id integer,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer,
+    CONSTRAINT reservations_pkey PRIMARY KEY (id),
+    CONSTRAINT reservations_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT reservations_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.reservations
+    OWNER to postgres;
+-- Index: idx_reservations_date_reservation
+
+-- DROP INDEX IF EXISTS public.idx_reservations_date_reservation;
+
+CREATE INDEX IF NOT EXISTS idx_reservations_date_reservation
+    ON public.reservations USING btree
+    (date_reservation ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_reservations_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_reservations_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_reservations_discotheque_id
+    ON public.reservations USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
