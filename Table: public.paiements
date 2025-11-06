@@ -1,0 +1,47 @@
+-- Table: public.paiements
+
+-- DROP TABLE IF EXISTS public.paiements;
+
+CREATE TABLE IF NOT EXISTS public.paiements
+(
+    id integer NOT NULL DEFAULT nextval('paiements_id_seq'::regclass),
+    montant numeric(10,2) NOT NULL,
+    date_paiement timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    entree_id integer,
+    discotheque_id integer,
+    user_id integer,
+    CONSTRAINT paiements_pkey PRIMARY KEY (id),
+    CONSTRAINT paiements_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT paiements_entree_id_fkey FOREIGN KEY (entree_id)
+        REFERENCES public.entrees (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT paiements_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.paiements
+    OWNER to postgres;
+-- Index: idx_paiements_date_paiement
+
+-- DROP INDEX IF EXISTS public.idx_paiements_date_paiement;
+
+CREATE INDEX IF NOT EXISTS idx_paiements_date_paiement
+    ON public.paiements USING btree
+    (date_paiement ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_paiements_entree_id
+
+-- DROP INDEX IF EXISTS public.idx_paiements_entree_id;
+
+CREATE INDEX IF NOT EXISTS idx_paiements_entree_id
+    ON public.paiements USING btree
+    (entree_id ASC NULLS LAST)
+    TABLESPACE pg_default;
