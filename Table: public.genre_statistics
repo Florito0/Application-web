@@ -1,0 +1,42 @@
+-- Table: public.genre_statistics
+
+-- DROP TABLE IF EXISTS public.genre_statistics;
+
+CREATE TABLE IF NOT EXISTS public.genre_statistics
+(
+    id integer NOT NULL DEFAULT nextval('genre_statistics_id_seq'::regclass),
+    discotheque_id integer NOT NULL,
+    genre character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    date date NOT NULL,
+    hour integer NOT NULL,
+    count integer DEFAULT 1,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT genre_statistics_pkey PRIMARY KEY (id),
+    CONSTRAINT unique_stat UNIQUE (discotheque_id, genre, date, hour),
+    CONSTRAINT fk_discotheque_stats FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT genre_statistics_hour_check CHECK (hour >= 0 AND hour <= 23)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.genre_statistics
+    OWNER to postgres;
+-- Index: idx_genre_statistics_date
+
+-- DROP INDEX IF EXISTS public.idx_genre_statistics_date;
+
+CREATE INDEX IF NOT EXISTS idx_genre_statistics_date
+    ON public.genre_statistics USING btree
+    (date DESC NULLS FIRST)
+    TABLESPACE pg_default;
+-- Index: idx_genre_statistics_discotheque
+
+-- DROP INDEX IF EXISTS public.idx_genre_statistics_discotheque;
+
+CREATE INDEX IF NOT EXISTS idx_genre_statistics_discotheque
+    ON public.genre_statistics USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
