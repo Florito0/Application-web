@@ -1,0 +1,46 @@
+-- Table: public.kiosque_sessions
+
+-- DROP TABLE IF EXISTS public.kiosque_sessions;
+
+CREATE TABLE IF NOT EXISTS public.kiosque_sessions
+(
+    id integer NOT NULL DEFAULT nextval('kiosque_sessions_id_seq'::regclass),
+    session_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    discotheque_id integer,
+    genre character varying(10) COLLATE pg_catalog."default",
+    user_id integer,
+    statut character varying(20) COLLATE pg_catalog."default" DEFAULT 'en_cours'::character varying,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT kiosque_sessions_pkey PRIMARY KEY (id),
+    CONSTRAINT kiosque_sessions_session_id_key UNIQUE (session_id),
+    CONSTRAINT fk_discotheque FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT fk_user FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.kiosque_sessions
+    OWNER to postgres;
+-- Index: idx_kiosque_sessions_discotheque
+
+-- DROP INDEX IF EXISTS public.idx_kiosque_sessions_discotheque;
+
+CREATE INDEX IF NOT EXISTS idx_kiosque_sessions_discotheque
+    ON public.kiosque_sessions USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_kiosque_sessions_session_id
+
+-- DROP INDEX IF EXISTS public.idx_kiosque_sessions_session_id;
+
+CREATE INDEX IF NOT EXISTS idx_kiosque_sessions_session_id
+    ON public.kiosque_sessions USING btree
+    (session_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
