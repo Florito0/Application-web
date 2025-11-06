@@ -1,0 +1,24 @@
+-- Table: public.codes_jour
+
+-- DROP TABLE IF EXISTS public.codes_jour;
+
+CREATE TABLE IF NOT EXISTS public.codes_jour
+(
+    id integer NOT NULL DEFAULT nextval('codes_jour_id_seq'::regclass),
+    date_code date NOT NULL,
+    code character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    user_id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT codes_jour_pkey PRIMARY KEY (id),
+    CONSTRAINT codes_jour_user_id_date_code_key UNIQUE (user_id, date_code),
+    CONSTRAINT codes_jour_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.codes_jour
+    OWNER to postgres;
