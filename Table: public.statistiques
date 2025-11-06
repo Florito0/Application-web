@@ -1,0 +1,48 @@
+-- Table: public.statistiques
+
+-- DROP TABLE IF EXISTS public.statistiques;
+
+CREATE TABLE IF NOT EXISTS public.statistiques
+(
+    id integer NOT NULL DEFAULT nextval('statistiques_id_seq'::regclass),
+    discotheque_id integer,
+    date_stat date NOT NULL,
+    total_entrees integer DEFAULT 0,
+    total_revenus numeric(10,2) DEFAULT 0.00,
+    taux_occupation numeric(5,2) DEFAULT 0.00,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer,
+    pic_frequentation integer DEFAULT 0,
+    heure_pic time without time zone,
+    nb_alertes_declenchees integer DEFAULT 0,
+    CONSTRAINT statistiques_pkey PRIMARY KEY (id),
+    CONSTRAINT statistiques_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT statistiques_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.statistiques
+    OWNER to postgres;
+-- Index: idx_statistiques_date_stat
+
+-- DROP INDEX IF EXISTS public.idx_statistiques_date_stat;
+
+CREATE INDEX IF NOT EXISTS idx_statistiques_date_stat
+    ON public.statistiques USING btree
+    (date_stat ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_statistiques_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_statistiques_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_statistiques_discotheque_id
+    ON public.statistiques USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
