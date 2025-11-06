@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tap2Enter</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to Tap2Enter</h1>
+    <form id="login-form">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+    <div id="discotheques-list"></div>
+    <form id="add-discotheque-form" style="display:none;">
+        <input type="text" id="nom" placeholder="Nom" required>
+        <input type="text" id="adresse" placeholder="Adresse" required>
+        <input type="text" id="telephone" placeholder="Téléphone" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <script>
+        let token = localStorage.getItem('token');
+
+        // Gestion de la connexion
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const response = await axios.post('/api/auth/login', { email, password });
+            token = response.data.token;
+            localStorage.setItem('token', token);
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('add-discotheque-form').style.display = 'block';
+            fetchDiscotheques();
+        });
+
+        // Afficher les discothèques
+        async function fetchDiscotheques() {
+            if (!token) return;
+            const response = await axios.get('/api/discotheques', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const list = document.getElementById('discotheques-list');
+            list.innerHTML = response.data.map(d => `<p>${d.nom}</p>`).join('');
+        }
+
+        // Ajouter une discothèque
+        document.getElementById('add-discotheque-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!token) return alert('Please login first');
+            const nom = document.getElementById('nom').value;
+            const adresse = document.getElementById('adresse').value;
+            const telephone = document.getElementById('telephone').value;
+            const email = document.getElementById('email').value;
+            await axios.post('/api/discotheques', { nom, adresse, telephone, email }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchDiscotheques();
+            e.target.reset();
+        });
+
+        // Charger au démarrage si token existe
+        if (token) {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('add-discotheque-form').style.display = 'block';
+            fetchDiscotheques();
+        }
+    </script>
+</body>
+</html>
