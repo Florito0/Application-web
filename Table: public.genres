@@ -1,0 +1,37 @@
+-- Table: public.genres
+
+-- DROP TABLE IF EXISTS public.genres;
+
+CREATE TABLE IF NOT EXISTS public.genres
+(
+    id integer NOT NULL DEFAULT nextval('genres_id_seq'::regclass),
+    nom character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    tarif_base numeric(10,2) NOT NULL,
+    tarif_heure_creuse numeric(10,2) NOT NULL,
+    actif boolean DEFAULT true,
+    discotheque_id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer,
+    CONSTRAINT genres_pkey PRIMARY KEY (id),
+    CONSTRAINT genres_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT genres_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.genres
+    OWNER to postgres;
+-- Index: idx_genres_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_genres_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_genres_discotheque_id
+    ON public.genres USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
