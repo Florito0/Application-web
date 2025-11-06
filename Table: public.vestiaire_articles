@@ -1,0 +1,46 @@
+-- Table: public.vestiaire_articles
+
+-- DROP TABLE IF EXISTS public.vestiaire_articles;
+
+CREATE TABLE IF NOT EXISTS public.vestiaire_articles
+(
+    id integer NOT NULL DEFAULT nextval('vestiaire_articles_id_seq'::regclass),
+    vestiaire_id integer NOT NULL,
+    article_vestiaire_id integer NOT NULL,
+    quantite integer NOT NULL DEFAULT 1,
+    prix_unitaire numeric(10,2) NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT vestiaire_articles_pkey PRIMARY KEY (id),
+    CONSTRAINT vestiaire_articles_article_id_fkey FOREIGN KEY (article_vestiaire_id)
+        REFERENCES public.articles_vestiaire (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT vestiaire_articles_vestiaire_id_fkey FOREIGN KEY (vestiaire_id)
+        REFERENCES public.vestiaires (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.vestiaire_articles
+    OWNER to postgres;
+
+COMMENT ON TABLE public.vestiaire_articles
+    IS 'Table de liaison entre un vestiaire et les articles déposés avec leurs quantités';
+-- Index: idx_vestiaire_articles_article_id
+
+-- DROP INDEX IF EXISTS public.idx_vestiaire_articles_article_id;
+
+CREATE INDEX IF NOT EXISTS idx_vestiaire_articles_article_id
+    ON public.vestiaire_articles USING btree
+    (article_vestiaire_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_vestiaire_articles_vestiaire_id
+
+-- DROP INDEX IF EXISTS public.idx_vestiaire_articles_vestiaire_id;
+
+CREATE INDEX IF NOT EXISTS idx_vestiaire_articles_vestiaire_id
+    ON public.vestiaire_articles USING btree
+    (vestiaire_id ASC NULLS LAST)
+    TABLESPACE pg_default;
