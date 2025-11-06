@@ -1,0 +1,26 @@
+-- Table: public.taxe_assignments
+
+-- DROP TABLE IF EXISTS public.taxe_assignments;
+
+CREATE TABLE IF NOT EXISTS public.taxe_assignments
+(
+    id integer NOT NULL DEFAULT nextval('taxe_assignments_id_seq'::regclass),
+    discotheque_id integer NOT NULL,
+    item_name character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    taxe_id integer,
+    CONSTRAINT taxe_assignments_pkey PRIMARY KEY (id),
+    CONSTRAINT taxe_assignments_discotheque_id_item_name_key UNIQUE (discotheque_id, item_name),
+    CONSTRAINT taxe_assignments_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT taxe_assignments_taxe_id_fkey FOREIGN KEY (taxe_id)
+        REFERENCES public.taxes (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.taxe_assignments
+    OWNER to postgres;
