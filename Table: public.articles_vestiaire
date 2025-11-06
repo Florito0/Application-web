@@ -1,0 +1,59 @@
+-- Table: public.articles_vestiaire
+
+-- DROP TABLE IF EXISTS public.articles_vestiaire;
+
+CREATE TABLE IF NOT EXISTS public.articles_vestiaire
+(
+    id integer NOT NULL DEFAULT nextval('articles_vestiaire_id_seq'::regclass),
+    nom character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    prix numeric(10,2) NOT NULL DEFAULT 0,
+    discotheque_id integer NOT NULL,
+    user_id integer,
+    ordre integer DEFAULT 0,
+    actif boolean DEFAULT true,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT articles_vestiaire_pkey PRIMARY KEY (id),
+    CONSTRAINT articles_vestiaire_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT articles_vestiaire_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.articles_vestiaire
+    OWNER to postgres;
+
+COMMENT ON TABLE public.articles_vestiaire
+    IS 'Stocke les types d''articles disponibles au vestiaire (manteau, sac, etc.)';
+-- Index: idx_articles_vestiaire_actif
+
+-- DROP INDEX IF EXISTS public.idx_articles_vestiaire_actif;
+
+CREATE INDEX IF NOT EXISTS idx_articles_vestiaire_actif
+    ON public.articles_vestiaire USING btree
+    (actif ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_articles_vestiaire_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_articles_vestiaire_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_articles_vestiaire_discotheque_id
+    ON public.articles_vestiaire USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+-- Trigger: update_articles_vestiaire_updated_at
+
+-- DROP TRIGGER IF EXISTS update_articles_vestiaire_updated_at ON public.articles_vestiaire;
+
+CREATE OR REPLACE TRIGGER update_articles_vestiaire_updated_at
+    BEFORE UPDATE 
+    ON public.articles_vestiaire
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
