@@ -698,13 +698,22 @@
                 </div>
             </div>
             <div class="kiosk-total-section">
-                <div class="kiosk-total-row">
-                    <div id="kiosk-total-discount"></div>
-                    <div id="kiosk-total-price">0€</div>
-                </div>
-                <button id="kiosk-checkout-btn" class="kiosk-checkout-btn" disabled>VALIDER</button>
-            </div>
+    <!-- Récapitulatif de commande -->
+    <div class="kiosk-order-container">
+        <h3 class="kiosk-order-title">Votre commande:</h3>
+        <div id="kiosk-order-summary" class="kiosk-order-summary">
+            <div class="order-empty">Aucun article sélectionné</div>
         </div>
+    </div>
+    
+    <!-- Total et réduction -->
+    <div class="kiosk-total-row">
+        <div id="kiosk-total-discount"></div>
+        <div id="kiosk-total-price">0€</div>
+    </div>
+    
+    <button id="kiosk-checkout-btn" class="kiosk-checkout-btn" disabled>VALIDER</button>
+</div>
 
         <div id="custom-confirmation-modal" class="unified-confirmation-modal">
             <div class="modal-content">
