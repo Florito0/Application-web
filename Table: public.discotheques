@@ -1,0 +1,44 @@
+-- Table: public.discotheques
+
+-- DROP TABLE IF EXISTS public.discotheques;
+
+CREATE TABLE IF NOT EXISTS public.discotheques
+(
+    id integer NOT NULL DEFAULT nextval('discotheques_id_seq'::regclass),
+    nom character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    adresse text COLLATE pg_catalog."default",
+    telephone character varying(20) COLLATE pg_catalog."default",
+    email character varying(100) COLLATE pg_catalog."default",
+    subscription_status subscription_status_enum DEFAULT 'trialing'::subscription_status_enum,
+    stripe_customer_id character varying(255) COLLATE pg_catalog."default",
+    subscription_end_date timestamp with time zone,
+    last_payment_date timestamp with time zone,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer NOT NULL,
+    ville character varying(255) COLLATE pg_catalog."default",
+    cover_image_url text COLLATE pg_catalog."default",
+    CONSTRAINT discotheques_pkey PRIMARY KEY (id),
+    CONSTRAINT discotheques_email_key UNIQUE (email),
+    CONSTRAINT discotheques_stripe_customer_id_key UNIQUE (stripe_customer_id),
+    CONSTRAINT user_id_unique UNIQUE (user_id),
+    CONSTRAINT discotheques_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.discotheques
+    OWNER to postgres;
+
+-- Trigger: trigger_update_timestamp
+
+-- DROP TRIGGER IF EXISTS trigger_update_timestamp ON public.discotheques;
+
+CREATE OR REPLACE TRIGGER trigger_update_timestamp
+    BEFORE UPDATE 
+    ON public.discotheques
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_timestamp();
