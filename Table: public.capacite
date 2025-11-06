@@ -1,0 +1,75 @@
+-- Table: public.capacite
+
+-- DROP TABLE IF EXISTS public.capacite;
+
+CREATE TABLE IF NOT EXISTS public.capacite
+(
+    id integer NOT NULL DEFAULT nextval('capacite_id_seq'::regclass),
+    discotheque_id integer NOT NULL,
+    current integer DEFAULT 0,
+    max integer NOT NULL,
+    alert_thresholds integer[] DEFAULT '{80,90}'::integer[],
+    user_id integer NOT NULL,
+    reset_schedule jsonb DEFAULT '{}'::jsonb,
+    last_reset timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    daily_peak integer DEFAULT 0,
+    is_active boolean DEFAULT true,
+    CONSTRAINT capacite_pkey PRIMARY KEY (id),
+    CONSTRAINT unique_capacite_per_disco UNIQUE (discotheque_id),
+    CONSTRAINT capacite_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT capacite_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT check_current_not_exceed_max CHECK (current <= max),
+    CONSTRAINT check_max_positive CHECK (max > 0),
+    CONSTRAINT check_current_positive CHECK (current >= 0)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.capacite
+    OWNER to postgres;
+
+ALTER TABLE IF EXISTS public.capacite
+    ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE IF EXISTS public.capacite
+    FORCE ROW LEVEL SECURITY;
+-- Index: idx_capacite_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_capacite_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_capacite_discotheque_id
+    ON public.capacite USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_capacite_is_active
+
+-- DROP INDEX IF EXISTS public.idx_capacite_is_active;
+
+CREATE INDEX IF NOT EXISTS idx_capacite_is_active
+    ON public.capacite USING btree
+    (is_active ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_capacite_user_id
+
+-- DROP INDEX IF EXISTS public.idx_capacite_user_id;
+
+CREATE INDEX IF NOT EXISTS idx_capacite_user_id
+    ON public.capacite USING btree
+    (user_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- POLICY: capacite_isolation
+
+-- DROP POLICY IF EXISTS capacite_isolation ON public.capacite;
+
+CREATE POLICY capacite_isolation
+    ON public.capacite
+    AS PERMISSIVE
+    FOR ALL
+    TO public
+    USING ((user_id = (current_setting('app.user_id'::text, true))::integer));
