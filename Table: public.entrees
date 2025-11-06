@@ -1,0 +1,90 @@
+-- Table: public.entrees
+
+-- DROP TABLE IF EXISTS public.entrees;
+
+CREATE TABLE IF NOT EXISTS public.entrees
+(
+    id integer NOT NULL DEFAULT nextval('entrees_id_seq'::regclass),
+    price numeric(10,2),
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    discotheque_id integer,
+    user_id integer,
+    regle_tarification_id integer,
+    taxe_id integer,
+    days jsonb,
+    presentation_low character varying(255) COLLATE pg_catalog."default",
+    presentation_normal character varying(255) COLLATE pg_catalog."default",
+    presentation_alcohol character varying(255) COLLATE pg_catalog."default",
+    presentation_soft character varying(255) COLLATE pg_catalog."default",
+    sex character varying(10) COLLATE pg_catalog."default" DEFAULT 'H/F'::character varying,
+    pure_items jsonb,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    order_position integer DEFAULT 0,
+    display_order integer DEFAULT 0,
+    day_orders jsonb DEFAULT '{}'::jsonb,
+    CONSTRAINT entrees_pkey PRIMARY KEY (id),
+    CONSTRAINT entrees_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT entrees_regle_tarification_id_fkey FOREIGN KEY (regle_tarification_id)
+        REFERENCES public.regles_tarification (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT entrees_taxe_id_fkey FOREIGN KEY (taxe_id)
+        REFERENCES public.taxes (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT entrees_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT entrees_sex_check CHECK (sex::text = ANY (ARRAY['Homme'::character varying, 'Femme'::character varying, 'H/F'::character varying]::text[]))
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.entrees
+    OWNER to postgres;
+-- Index: idx_entrees_date
+
+-- DROP INDEX IF EXISTS public.idx_entrees_date;
+
+CREATE INDEX IF NOT EXISTS idx_entrees_date
+    ON public.entrees USING btree
+    (created_at ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_entrees_days_gin
+
+-- DROP INDEX IF EXISTS public.idx_entrees_days_gin;
+
+CREATE INDEX IF NOT EXISTS idx_entrees_days_gin
+    ON public.entrees USING gin
+    (days)
+    TABLESPACE pg_default;
+-- Index: idx_entrees_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_entrees_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_entrees_discotheque_id
+    ON public.entrees USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_entrees_pure_items_gin
+
+-- DROP INDEX IF EXISTS public.idx_entrees_pure_items_gin;
+
+CREATE INDEX IF NOT EXISTS idx_entrees_pure_items_gin
+    ON public.entrees USING gin
+    (pure_items)
+    TABLESPACE pg_default;
+
+-- Trigger: update_entrees_updated_at
+
+-- DROP TRIGGER IF EXISTS update_entrees_updated_at ON public.entrees;
+
+CREATE OR REPLACE TRIGGER update_entrees_updated_at
+    BEFORE UPDATE 
+    ON public.entrees
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_entrees_updated_at_column();
