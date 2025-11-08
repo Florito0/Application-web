@@ -33,37 +33,37 @@
             <button>OK</button>
         </div>
     </div>
-   <div class="sidebar" id="sidebar">
-    <button class="toggle-btn" aria-label="Réduire/Étendre le menu">
-        <span id="toggleIcon" class="icon chevron-left"></span>
-    </button>
-    <a href="#" class="menu-item pulse active" data-target="gestion" aria-label="Gestion" data-tooltip="Gestion">
-        <span class="icon list"></span>
-        <span class="text">Gestion</span>
-    </a>
-    <a href="#" class="menu-item" data-target="reservation" aria-label="Réservation" data-tooltip="Réservation">
-        <span class="icon calendar"></span>
-        <span class="text">Réservation</span>
-    </a>
-    <a href="#" class="menu-item" data-target="kiosque" aria-label="Kiosque" data-tooltip="Kiosque">
-        <span class="icon screen"></span>
-        <span class="text">Kiosque</span>
-    </a>
-    <a href="#" class="menu-item" data-target="profile" aria-label="Profile" data-tooltip="Profile">
-        <span class="icon user"></span>
-        <span class="text">Profile</span>
-    </a>
-    <a href="#" class="menu-item" data-target="rapports" aria-label="Rapports/Statistiques" data-tooltip="Rapports/Statistiques">
-        <span class="icon chart"></span>
-        <span class="text">Rapports/Statistiques</span>
-    </a>
-    <a href="#" class="menu-item" data-target="configuration" aria-label="Configuration" data-tooltip="Configuration">
-        <span class="icon gear"></span>
-        <span class="text">Configuration</span>
-    </a>
-</div>
+    <div class="sidebar" id="sidebar">
+        <button class="toggle-btn" aria-label="Réduire/Étendre le menu">
+            <span id="toggleIcon" class="icon chevron-left"></span>
+        </button>
+        <a href="#" class="menu-item pulse active" data-target="gestion" aria-label="Gestion" data-tooltip="Gestion">
+            <span class="icon list"></span>
+            <span class="text">Gestion</span>
+        </a>
+        <a href="#" class="menu-item" data-target="reservation" aria-label="Réservation" data-tooltip="Réservation">
+            <span class="icon calendar"></span>
+            <span class="text">Réservation</span>
+        </a>
+        <a href="#" class="menu-item" data-target="kiosque" aria-label="Kiosque" data-tooltip="Kiosque">
+            <span class="icon screen"></span>
+            <span class="text">Kiosque</span>
+        </a>
+        <a href="#" class="menu-item" data-target="profile" aria-label="Profile" data-tooltip="Profile">
+            <span class="icon user"></span>
+            <span class="text">Profile</span>
+        </a>
+        <a href="#" class="menu-item" data-target="rapports" aria-label="Rapports/Statistiques" data-tooltip="Rapports/Statistiques">
+            <span class="icon chart"></span>
+            <span class="text">Rapports/Statistiques</span>
+        </a>
+        <a href="#" class="menu-item" data-target="configuration" aria-label="Configuration" data-tooltip="Configuration">
+            <span class="icon gear"></span>
+            <span class="text">Configuration</span>
+        </a>
+    </div>
     <div class="main-content" id="mainContent">
-        <div class="content-section" id="gestion">
+        <div class="content-section" id="gestion" style="display: block;">  <!-- Active par défaut -->
             <h2>Gestion</h2>
             <div class="subtitle">Configurez les paramètres essentiels de votre discothèque</div>
             <div class="submenu-content">
@@ -85,7 +85,7 @@
             </div>
         </div>
         
-        <div class="content-section gestion-entrees" id="gestion-tickets-entree">
+        <div class="content-section gestion-entrees" id="gestion-tickets-entree" style="display: none;">
             <a href="#" class="back-button" data-target="gestion">← Retour</a>
             <button class="toggle-interface-btn" id="toggle-interface-btn" style="margin-bottom: 15px;">Passer au Kiosque</button>
             <div class="container">
@@ -165,80 +165,76 @@
             </div>
         </div>
 
-       <div class="content-section gestion-vestiaires" id="gestion-tickets-vestiaire">
-    <a href="#" class="back-button" data-target="gestion">← Retour</a>
-    
-    <!-- Bouton de bascule -->
-    <button class="toggle-interface-btn" id="toggle-vestiaire-interface-btn" style="margin-bottom: 15px;">
-        Passer au Kiosque
-    </button>
-    
-    <!-- Interface ADMIN (gestion des articles) -->
-    <div class="vestiaires-container" id="vestiaires-admin-view">
-        <div class="vestiaires-header">
-            <h1>Gestion des Articles de Vestiaire</h1>
-            <div class="subtitle">Configurez les articles disponibles au vestiaire</div>
-        </div>
-        <div class="vestiaires-admin">
-            <h2>Articles configurés</h2>
-            <div class="articles-list" id="articles-vestiaire-list">
-                <div class="vestiaires-loading">
-                    <div class="spinner"></div>
+        <div class="content-section gestion-vestiaires" id="gestion-tickets-vestiaire" style="display: none;">
+            <a href="#" class="back-button" data-target="gestion">← Retour</a>
+            <button class="toggle-interface-btn" id="toggle-vestiaire-interface-btn" style="margin-bottom: 15px;">
+                Passer au Kiosque
+            </button>
+            <div class="vestiaires-container" id="vestiaires-admin-view">
+                <div class="vestiaires-header">
+                    <h1>Gestion des Articles de Vestiaire</h1>
+                    <div class="subtitle">Configurez les articles disponibles au vestiaire</div>
+                </div>
+                <div class="vestiaires-admin">
+                    <h2>Articles configurés</h2>
+                    <div class="articles-list" id="articles-vestiaire-list">
+                        <div class="vestiaires-loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <div class="article-form">
+                        <h3>Ajouter un article</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="article-vestiaire-name">Nom de l'article</label>
+                                <input type="text" id="article-vestiaire-name" placeholder="Ex: Manteau, Sac, Veste..." autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="article-vestiaire-price">Prix (€)</label>
+                                <input type="number" id="article-vestiaire-price" placeholder="0.00" step="0.01" min="0" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <button id="add-article-vestiaire-btn" class="add-article-btn">Ajouter</button>
+                                <button id="cancel-edit-article-btn" class="cancel-edit-btn" style="display: none;">Annuler</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="article-form">
-                <h3>Ajouter un article</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="article-vestiaire-name">Nom de l'article</label>
-                        <input type="text" id="article-vestiaire-name" placeholder="Ex: Manteau, Sac, Veste..." autocomplete="off">
+            <div class="vestiaires-container" id="vestiaires-kiosk-view" style="display: none;">
+                <div class="vestiaires-header">
+                    <h1>VESTIAIRE</h1>
+                    <div class="subtitle">Sélectionnez vos articles</div>
+                </div>
+                <div class="vestiaires-kiosque" id="vestiaires-kiosque-content-standalone">
+                    <div class="vestiaires-loading">
+                        <div class="spinner"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="article-vestiaire-price">Prix (€)</label>
-                        <input type="number" id="article-vestiaire-price" placeholder="0.00" step="0.01" min="0" autocomplete="off">
+                </div>
+                <div class="vestiaires-actions">
+                    <div class="vestiaire-order-container">
+                        <h3 class="vestiaire-order-title">Votre commande:</h3>
+                        <div id="vestiaire-order-summary" class="vestiaire-order-summary">
+                            <div class="order-empty">Aucun article sélectionné</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <button id="add-article-vestiaire-btn" class="add-article-btn">Ajouter</button>
-                        <button id="cancel-edit-article-btn" class="cancel-edit-btn" style="display: none;">Annuler</button>
+                    <div class="vestiaires-total">
+                        <span>TOTAL VESTIAIRE</span>
+                        <span id="vestiaire-total-standalone">0.00€</span>
+                    </div>
+                    <div class="vestiaires-buttons">
+                        <button id="validate-vestiaires-btn-standalone" class="validate-vestiaires-btn" disabled>
+                            VALIDER LE VESTIAIRE
+                        </button>
+                        <button id="skip-vestiaires-btn-standalone" class="skip-vestiaires-btn">
+                            CONTINUER SANS VESTIAIRE
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- FIN Interface ADMIN -->
-    
-    <!-- Interface KIOSQUE (sélection client) -->
-    <div class="vestiaires-container" id="vestiaires-kiosk-view" style="display: none;">
-        <div class="vestiaires-header">
-            <h1>VESTIAIRE</h1>
-            <div class="subtitle">Sélectionnez vos articles</div>
-        </div>
-        <div class="vestiaires-kiosque" id="vestiaires-kiosque-content-standalone">
-            <div class="vestiaires-loading">
-                <div class="spinner"></div>
-            </div>
-        </div>
-        <div class="vestiaires-actions">
-            <div class="vestiaires-total">
-                <span>TOTAL VESTIAIRE</span>
-                <span id="vestiaire-total-standalone">0.00€</span>
-            </div>
-            <div class="vestiaires-buttons">
-                <button id="validate-vestiaires-btn-standalone" class="validate-vestiaires-btn" disabled>
-                    VALIDER LE VESTIAIRE
-                </button>
-                <button id="skip-vestiaires-btn-standalone" class="skip-vestiaires-btn">
-                    CONTINUER SANS VESTIAIRE
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- FIN Interface KIOSQUE -->
-    
-</div>
-<!-- FIN gestion-tickets-vestiaire -->
 
-        <div class="content-section" id="gestion-capacite">
+        <div class="content-section" id="gestion-capacite" style="display: none;">
             <a href="#" class="back-button" data-target="gestion">← Retour</a>
             <div class="container" id="capaciteMainInterface">
                 <div class="header">
@@ -296,7 +292,7 @@
             </div>
         </div>
         
-        <div class="content-section gestion-horaires" id="gestion-heures-creuses">
+        <div class="content-section gestion-horaires" id="gestion-heures-creuses" style="display: none;">
             <a href="#" class="back-button" data-target="gestion">← Retour</a>
             <div class="container">
                 <div class="header">
@@ -328,7 +324,7 @@
             </div>
         </div>
 
-        <div class="content-section" id="gestion-code-jour">
+        <div class="content-section" id="gestion-code-jour" style="display: none;">
             <a href="#" class="back-button" data-target="gestion">← Retour</a>
             <h2>Code Jour</h2>
             <div class="subtitle">Gérer les codes d'accès quotidiens</div>
@@ -347,22 +343,21 @@
             </div>
         </div>
 
-        <div class="content-section" id="reservation">
+        <div class="content-section" id="reservation" style="display: none;">
             <h2>Réservation</h2>
             <div class="subtitle">Gérer les réservations des clients</div>
             <p>Contenu de la page Réservation...</p>
         </div>
 
-        <div class="content-section" id="client">
+        <div class="content-section" id="client" style="display: none;">
             <h2>Client</h2>
             <div class="subtitle">Consulter et gérer les informations des clients</div>
             <p>Contenu de la page Client...</p>
         </div>
 
-        <div class="content-section kiosk-integrated" id="kiosque">
+        <div class="content-section kiosk-integrated" id="kiosque" style="display: none;">
             <h2>Kiosque</h2>
             <div class="subtitle">Interface kiosque pour les clients</div>
-            
             <div id="genre-selection" class="kiosque-step">
                 <div class="container">
                     <div class="header">
@@ -387,15 +382,12 @@
                     </div>
                 </div>
             </div>
-            
             <div id="tickets-entree" class="kiosque-step" style="display: none;">
                 <!-- Placeholder pour l'étape tickets -->
             </div>
-            
         </div>
-        <!-- FIN section kiosque -->
 
-        <div class="content-section" id="profile">
+        <div class="content-section" id="profile" style="display: none;">
             <h2>Profile</h2>
             <div class="subtitle">Modifier les informations de votre discothèque</div>
             <div class="cover-section" id="coverSection">
@@ -448,7 +440,7 @@
             </form>
         </div>
 
-        <div class="content-section" id="configuration">
+        <div class="content-section" id="configuration" style="display: none;">
             <h2>Configuration</h2>
             <div class="subtitle">Personnaliser les paramètres généraux</div>
             <div class="submenu-content">
@@ -470,7 +462,7 @@
             </div>
         </div>
 
-        <div class="content-section" id="configuration-modes-paiement">
+        <div class="content-section" id="configuration-modes-paiement" style="display: none;">
             <a href="#" class="back-button" data-target="configuration">← Retour</a>
             <h2>Modes de paiement et Caisse</h2>
             <div class="subtitle">Définissez les modes de paiement acceptés</div>
@@ -488,7 +480,7 @@
             </div>
         </div>
 
-        <div class="content-section" id="configuration-caisse-parametres">
+        <div class="content-section" id="configuration-caisse-parametres" style="display: none;">
             <a href="#" class="back-button" data-target="configuration-modes-paiement">← Retour</a>
             <h2>Paramètres de caisse</h2>
             <div class="subtitle">Paramètres fiscaux</div>
@@ -506,14 +498,14 @@
             </div>
         </div>
 
-        <div class="content-section" id="configuration-verification-compte">
+        <div class="content-section" id="configuration-verification-compte" style="display: none;">
             <a href="#" class="back-button" data-target="configuration-modes-paiement">← Retour</a>
             <h2>Vérification du compte</h2>
             <div class="subtitle">Commencer à percevoir vos versements</div>
             <p>Contenu...</p>
         </div>
 
-        <div class="content-section" id="configuration-taxes">
+        <div class="content-section" id="configuration-taxes" style="display: none;">
             <a href="#" class="back-button" data-target="configuration-caisse-parametres">← Retour</a>
             <h2>Paramètres de taxes</h2>
             <div class="subtitle">Gérer les paramètres fiscaux</div>
@@ -577,21 +569,21 @@
             </div>
         </div>
 
-        <div class="content-section" id="configuration-tickets">
+        <div class="content-section" id="configuration-tickets" style="display: none;">
             <a href="#" class="back-button" data-target="configuration-caisse-parametres">← Retour</a>
             <h2>Paramètres des tickets</h2>
             <div class="subtitle">Personnaliser vos tickets</div>
             <p>Contenu...</p>
         </div>
 
-        <div class="content-section" id="configuration-abonnement">
+        <div class="content-section" id="configuration-abonnement" style="display: none;">
             <a href="#" class="back-button" data-target="configuration">← Retour</a>
             <h2>Abonnement et facturation</h2>
             <div class="subtitle">Détails de facturation</div>
             <p>Contenu...</p>
         </div>
 
-        <div class="content-section" id="configuration-kiosque-container">
+        <div class="content-section" id="configuration-kiosque-container" style="display: none;">
             <a href="#" class="back-button" data-target="configuration">← Retour</a>
             <h2>Kiosque</h2>
             <div class="subtitle">Configurer les paramètres du kiosque</div>
@@ -604,7 +596,7 @@
             </div>
         </div>
 
-        <div class="content-section" id="configuration-kiosque">
+        <div class="content-section" id="configuration-kiosque" style="display: none;">
             <a href="#" class="back-button" data-target="configuration-kiosque-container">← Retour</a>
             <h2>Kiosque</h2>
             <div class="subtitle">Configuration des alertes</div>
@@ -675,17 +667,17 @@
             </div>
         </div>
 
-        <div class="content-section" id="rapports">
+        <div class="content-section" id="rapports" style="display: none;">
             <h2>Rapports/Statistiques</h2>
             <div class="subtitle">Consultez vos statistiques</div>
             <p>Contenu...</p>
         </div>
 
         <div class="content-section kiosk-container" id="kiosk-view" style="display: none;">
-    <button class="toggle-back-btn" id="toggle-back-btn">Passer au Tableau de Bord</button>
-    <div class="kiosk-header">
-        <!-- Le contenu sera généré dynamiquement par updateKioskHeader() -->
-    </div>
+            <button class="toggle-back-btn" id="toggle-back-btn">Passer au Tableau de Bord</button>
+            <div class="kiosk-header">
+                <!-- Le contenu sera généré dynamiquement par updateKioskHeader() -->
+            </div>
             <div class="kiosk-items-container">
                 <div class="kiosk-category" id="access-soiree-kiosk">
                     <h2>Accès Soirée</h2>
@@ -698,23 +690,21 @@
                 </div>
             </div>
             <div class="kiosk-total-section">
-    <!-- Récapitulatif de commande -->
-    <div class="kiosk-order-container">
-        <h3 class="kiosk-order-title">Votre commande:</h3>
-        <div id="kiosk-order-summary" class="kiosk-order-summary">
-            <div class="order-empty">Aucun article sélectionné</div>
+                <div class="kiosk-order-container">
+                    <h3 class="kiosk-order-title">Votre commande:</h3>
+                    <div id="kiosk-order-summary" class="kiosk-order-summary">
+                        <div class="order-empty">Aucun article sélectionné</div>
+                    </div>
+                </div>
+                <div class="kiosk-total-row">
+                    <div id="kiosk-total-discount"></div>
+                    <div id="kiosk-total-price">0€</div>
+                </div>
+                <button id="kiosk-checkout-btn" class="kiosk-checkout-btn" disabled>VALIDER</button>
+            </div>
         </div>
-    </div>
-    
-    <!-- Total et réduction -->
-    <div class="kiosk-total-row">
-        <div id="kiosk-total-discount"></div>
-        <div id="kiosk-total-price">0€</div>
-    </div>
-    
-    <button id="kiosk-checkout-btn" class="kiosk-checkout-btn" disabled>VALIDER</button>
-</div>
 
+        <!-- FIX CLÉ : Modal À L'INTÉRIEUR de main-content, après toutes les sections -->
         <div id="custom-confirmation-modal" class="unified-confirmation-modal">
             <div class="modal-content">
                 <p id="modal-message" class="modal-message">Message de confirmation</p>
@@ -724,7 +714,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>  <!-- FIN de .main-content -->
 
     <script src="/js/gestion-codes-jour.js"></script>
     <script src="/js/profile.js"></script>
