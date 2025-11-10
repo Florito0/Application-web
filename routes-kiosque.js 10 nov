@@ -1,0 +1,73 @@
+// routes/kiosque.js - Routes complètes pour le workflow kiosque
+
+const express = require('express');
+const router = express.Router();
+const { 
+    // Fonctions existantes
+    createKiosqueInteraction, 
+    assignVestiaireToInteraction, 
+    getKiosqueInteractions,
+    
+    // Nouvelles fonctions
+    getKiosqueCapacity,
+    createKiosqueSession,
+    validateKiosqueSession,
+    getKiosqueStats
+} = require('../controllers/kiosqueController');
+
+// ============================================================
+// ROUTES EXISTANTES (CONSERVÉES)
+// ============================================================
+
+// POST /api/kiosque - Créer une interaction kiosque
+router.post('/', createKiosqueInteraction);
+
+// POST /api/kiosque/vestiaire - Assigner un vestiaire à une interaction
+router.post('/vestiaire', assignVestiaireToInteraction);
+
+// GET /api/kiosque - Récupérer toutes les interactions kiosque
+router.get('/', getKiosqueInteractions);
+
+// ============================================================
+// NOUVELLES ROUTES POUR LE WORKFLOW KIOSQUE
+// ============================================================
+
+/**
+ * 🆕 GET /api/kiosque/capacity
+ * Récupérer la capacité disponible en temps réel
+ * Utilisé par l'Interface 1 pour le polling
+ */
+router.get('/capacity', getKiosqueCapacity);
+
+/**
+ * 🆕 POST /api/kiosque/session
+ * Créer une session kiosque (optionnel - pour évolution future)
+ * Actuellement, on utilise localStorage côté client
+ * Cette route est prête si tu veux créer la session dès l'Interface 1
+ */
+router.post('/session', createKiosqueSession);
+
+/**
+ * 🆕 POST /api/kiosque/validate
+ * Valider une session kiosque complète (Interface 4)
+ * - Vérifie la capacité en temps réel
+ * - Décompte la capacité
+ * - Crée la session avec toute la commande
+ * - Transaction atomique pour éviter les race conditions
+ */
+router.post('/validate', validateKiosqueSession);
+
+/**
+ * 🆕 GET /api/kiosque/stats
+ * Récupérer les statistiques du jour
+ * - Nombre de sessions
+ * - Taux de conversion
+ * - Chiffre d'affaires
+ */
+router.get('/stats', getKiosqueStats);
+
+// ============================================================
+// EXPORTS
+// ============================================================
+
+module.exports = router;
