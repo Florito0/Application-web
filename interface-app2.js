@@ -1,4 +1,5 @@
-// interface-app.js - VERSION COMPLÈTE CORRIGÉE (673 LIGNES)
+// interface-app.js - VERSION COMPLÈTE CORRIGÉE
+// 10 novembre 2024
 
 // --- VARIABLES GLOBALES ---
 let gestionCodesInstance = null;
@@ -378,9 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
             emailInput.closest('.form-group').classList.add('invalid');
         }
         
-        if (countryInput && !countryInput.value.trim()) {
+        // FIX: Utiliser countryCodeInput au lieu de countryInput
+        if (countryCodeInput && !countryCodeInput.value.trim()) {
             isValid = false;
-            countryInput.closest('.form-group').classList.add('invalid');
+            countryCodeInput.closest('.form-group').classList.add('invalid');
         }
         
         return isValid;
@@ -540,18 +542,108 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.addEventListener('vestiaireValidated', (event) => {
+    // Événement après validation du vestiaire (Interface 3)
+    document.addEventListener('vestiaireValidated', async (event) => {
         console.log('✅ [Interface-App] Vestiaire validé:', event.detail);
+        
+        // Sauvegarder la sélection vestiaire dans localStorage
+        localStorage.setItem('kioskVestiaireSelection', JSON.stringify(event.detail.selection || {}));
+        localStorage.setItem('kioskVestiaireTotal', event.detail.total || 0);
+        
+        // TODO: Passer à l'Interface 4 (Récap panier) une fois créée
+        // await showSection('kiosk-interface-4-recap');
+        
+        // Pour l'instant, on log simplement en attendant la création de l'Interface 4
+        console.log('📋 [Interface-App] Prêt pour Interface 4 (Récap panier) - À créer');
+        console.log('💾 Données vestiaire sauvegardées:', event.detail);
     });
 
-    document.addEventListener('vestiaireSkipped', () => {
-        console.log('⏭️ [Interface-App] Vestiaire ignoré');
+    // Événement si l'utilisateur skip le vestiaire (Interface 3)
+    document.addEventListener('vestiaireSkipped', async () => {
+        console.log('⏭️ [Interface-App] Vestiaire ignoré - passage direct à Interface 4');
+        
+        // Supprimer toute sélection vestiaire précédente
+        localStorage.removeItem('kioskVestiaireSelection');
+        localStorage.removeItem('kioskVestiaireTotal');
+        
+        // TODO: Passer à l'Interface 4 (Récap panier) une fois créée
+        // await showSection('kiosk-interface-4-recap');
+        
+        console.log('📋 [Interface-App] Prêt pour Interface 4 (Récap panier) - À créer');
     });
 
     // Écouter l'event custom pour transition kiosque
     document.addEventListener('kioskToViewTransition', () => {
         console.log('🔄 [Interface-App] Transition kiosque détectée – sync si besoin');
     });
+
+    // 🔒 VALIDATION ANTI-FRAUDE : Transition Interface 2 → Interface 3
+    document.addEventListener('validateKioskOrder', async (event) => {
+        console.log('🔒 [Interface-App] Validation anti-fraude Interface 2');
+        
+        const nombrePersonnes = parseInt(localStorage.getItem('kioskGroupSize')) || 1;
+        const panierData = event.detail || {};
+        const nombreEntrees = panierData.totalEntrees || 0;
+        
+        // 🚨 RÈGLE ANTI-FRAUDE : Nombre d'entrées doit être >= Nombre de personnes
+        if (nombreEntrees < nombrePersonnes) {
+            // Afficher erreur
+            showKioskError(`⚠️ ATTENTION : Vous devez sélectionner au moins ${nombrePersonnes} entrées pour ${nombrePersonnes} personnes.`);
+            console.warn(`❌ [Anti-Fraude] Bloqué: ${nombreEntrees} entrées < ${nombrePersonnes} personnes`);
+            return; // BLOQUER la transition
+        }
+        
+        // ✅ Validation OK - Sauvegarder les données et passer à Interface 3
+        console.log('✅ [Anti-Fraude] Validation OK:', {
+            personnes: nombrePersonnes,
+            entrees: nombreEntrees
+        });
+        
+        localStorage.setItem('kioskOrderData', JSON.stringify(panierData));
+        
+        // Passer à Interface 3 (Vestiaire)
+        await showSection('vestiaire-selection');
+    });
+
+    // Fonction helper pour afficher les erreurs kiosque
+    function showKioskError(message) {
+        // Vérifier si une modal d'erreur existe déjà
+        let errorModal = document.getElementById('kiosk-error-modal');
+        
+        if (!errorModal) {
+            // Créer la modal d'erreur
+            errorModal = document.createElement('div');
+            errorModal.id = 'kiosk-error-modal';
+            errorModal.className = 'kiosk-error-modal';
+            errorModal.innerHTML = `
+                <div class="kiosk-error-content">
+                    <div class="kiosk-error-icon">⚠️</div>
+                    <div class="kiosk-error-message"></div>
+                    <button class="kiosk-error-btn">COMPRIS</button>
+                </div>
+            `;
+            document.body.appendChild(errorModal);
+            
+            // Ajouter l'événement de fermeture
+            errorModal.querySelector('.kiosk-error-btn').addEventListener('click', () => {
+                errorModal.classList.remove('show');
+                setTimeout(() => {
+                    errorModal.style.display = 'none';
+                }, 300);
+            });
+        }
+        
+        // Afficher le message
+        const messageElement = errorModal.querySelector('.kiosk-error-message');
+        if (messageElement) {
+            messageElement.textContent = message;
+        }
+        
+        errorModal.style.display = 'flex';
+        setTimeout(() => {
+            errorModal.classList.add('show');
+        }, 10);
+    }
 
     // --- DEBUG ATTACHEMENT LISTENERS ---
     console.log('🔗 [Interface-App] Attachement menu-items:', menuItems.length);
