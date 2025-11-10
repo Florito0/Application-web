@@ -1,4 +1,5 @@
 // public/js/kiosk-workflow.js - Gestion du workflow Interface 1: Nombre de personnes
+// VERSION CORRIGÉE - 10 novembre 2024
 
 (function() {  // IIFE pour scoper localement et éviter les conflits globaux
     class KioskWorkflow {
@@ -13,6 +14,7 @@
             this.maxGroupSize = 40;
             this.capacityRemaining = null;
             this.capacityThreshold = 20; // Seuil pour afficher l'alerte
+            this.capacityLoadFailed = false; // Flag pour indiquer si le chargement a échoué
             
             // Éléments DOM
             this.interface1 = null;
@@ -149,27 +151,106 @@
                         const max = capaciteData.max || 400;
                         const current = capaciteData.current || 0;
                         this.capacityRemaining = max - current;
+                        this.capacityLoadFailed = false; // Réinitialiser le flag d'erreur
 
                         console.log(`📊 [KioskWorkflow] Capacité restante: ${this.capacityRemaining}/${max}`);
 
                         // Mettre à jour l'affichage des alertes
                         this.updateCapacityAlerts();
+                        
+                        // Réactiver le bouton de validation si nécessaire
+                        if (this.validateBtn && this.validateBtn.disabled && this.capacityRemaining > 0) {
+                            this.validateBtn.disabled = false;
+                            this.updateDisplay(); // Mettre à jour le texte du bouton
+                        }
+                    } else {
+                        console.warn('⚠️ [KioskWorkflow] Données de capacité vides');
+                        this.handleCapacityLoadError();
                     }
+                } else {
+                    console.error('❌ [KioskWorkflow] Erreur API capacité:', response.status);
+                    this.handleCapacityLoadError();
                 }
             } catch (error) {
                 console.error('❌ [KioskWorkflow] Erreur chargement capacité:', error);
+                this.handleCapacityLoadError();
+            }
+        }
+
+        // Gérer les erreurs de chargement de capacité
+        handleCapacityLoadError() {
+            this.capacityLoadFailed = true;
+            
+            // Bloquer la validation si capacité inconnue
+            if (this.validateBtn) {
+                this.validateBtn.disabled = true;
+                this.validateBtn.textContent = '⚠️ CAPACITÉ INDISPONIBLE';
+            }
+
+            // Afficher une alerte avec bouton retry
+            if (this.capacityAlert) {
+                this.capacityAlert.classList.add('visible');
+                const alertText = this.capacityAlert.querySelector('.alert-text');
+                if (alertText) {
+                    alertText.innerHTML = `
+                        ⚠️ Impossible de récupérer la capacité - Veuillez réessayer
+                        <button class="capacity-retry-btn" style="
+                            display: block;
+                            margin: 15px auto 0;
+                            background: #007bff;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: background 0.3s ease;
+                        ">🔄 RÉESSAYER</button>
+                    `;
+                    
+                    // Attacher l'événement au bouton retry
+                    const retryBtn = alertText.querySelector('.capacity-retry-btn');
+                    if (retryBtn) {
+                        retryBtn.addEventListener('click', () => {
+                            console.log('🔄 [KioskWorkflow] Retry manuel capacité');
+                            this.capacityLoadFailed = false;
+                            this.capacityAlert.classList.remove('visible');
+                            this.loadCapacity();
+                        });
+                        
+                        // Effet hover
+                        retryBtn.addEventListener('mouseenter', function() {
+                            this.style.background = '#0056b3';
+                        });
+                        retryBtn.addEventListener('mouseleave', function() {
+                            this.style.background = '#007bff';
+                        });
+                    }
+                }
             }
         }
 
         // Mettre à jour les alertes de capacité
         updateCapacityAlerts() {
+            // Ne pas afficher d'alerte si le chargement a échoué
+            if (this.capacityLoadFailed) {
+                return;
+            }
+
             // Afficher l'alerte "Presque complet" si <20 places
             if (this.capacityAlert) {
                 if (this.capacityRemaining !== null && this.capacityRemaining < this.capacityThreshold && this.capacityRemaining > 0) {
                     this.capacityAlert.classList.add('visible');
                     const alertText = this.capacityAlert.querySelector('.alert-text');
                     if (alertText) {
-                        alertText.textContent = `Presque complet - Reste ${this.capacityRemaining} places`;
+                        alertText.textContent = `⚠️ Presque complet - Plus que ${this.capacityRemaining} places disponibles`;
+                    }
+                } else if (this.capacityRemaining === 0) {
+                    this.capacityAlert.classList.add('visible');
+                    const alertText = this.capacityAlert.querySelector('.alert-text');
+                    if (alertText) {
+                        alertText.textContent = '🚫 Complet - Aucune place disponible';
                     }
                 } else {
                     this.capacityAlert.classList.remove('visible');
@@ -195,7 +276,7 @@
                 this.increaseBtn.addEventListener('click', () => this.changeGroupSize(1));
             }
 
-            // Bouton VALIDER
+            // Bouton VALIDER - CORRECTION DU BUG CRITIQUE
             if (this.validateBtn) {
                 this.validateBtn.addEventListener('click', () => this.validateGroupSize());
             }
@@ -242,7 +323,7 @@
             }
 
             // Mettre à jour le texte du bouton VALIDER
-            if (this.validateBtn) {
+            if (this.validateBtn && !this.capacityLoadFailed) {
                 const personText = this.groupSize === 1 ? 'PERSONNE' : 'PERSONNES';
                 this.validateBtn.textContent = `VALIDER POUR ${this.groupSize} ${personText}`;
             }
@@ -260,6 +341,12 @@
         // Valider et passer à l'interface suivante
         async validateGroupSize() {
             console.log(`✅ [KioskWorkflow] Validation: ${this.groupSize} personne(s)`);
+
+            // Bloquer si le chargement de capacité a échoué
+            if (this.capacityLoadFailed) {
+                alert('⚠️ Impossible de valider : la capacité de la salle n\'a pas pu être récupérée. Veuillez réessayer.');
+                return;
+            }
 
             // Re-vérifier la capacité en temps réel avant de valider
             await this.loadCapacity();
@@ -317,13 +404,19 @@
         async reset() {
             this.groupSize = 1;
             this.capacityRemaining = null;
+            this.capacityLoadFailed = false;
+            
             if (this.capacityInterval) {
                 clearInterval(this.capacityInterval);
                 this.capacityInterval = null;
             }
+            
             this.updateDisplay();
             await this.loadCapacity();
             await this.loadHeader();
+            
+            // Redémarrer le polling
+            this.capacityInterval = setInterval(() => this.loadCapacity(), 10000);
         }
     }
 
