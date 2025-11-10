@@ -1,0 +1,370 @@
+// controllers/kiosqueController.js - Version simplifiée sans genres
+
+const pool = require('../db');
+const { getHorairesData } = require('./horairesController');
+
+// ============================================================
+// FONCTIONS EXISTANTES (SIMPLIFIÉES - SANS GENRES)
+// ============================================================
+
+async function createKiosqueInteraction(req, res) {
+    try {
+        const { discotheque_id } = req.body;
+        const { isHeureCreuse } = getHorairesData();
+        const tarif = isHeureCreuse ? 5.00 : 10.00;
+
+        // Créer une entrée (sans genre)
+        const entreeResult = await pool.query(
+            'INSERT INTO entrees (tarif, is_heure_creuse, discotheque_id) VALUES ($1, $2, $3) RETURNING *',
+            [tarif, isHeureCreuse, discotheque_id || 1]
+        );
+        const entree_id = entreeResult.rows[0].id;
+
+        // Créer une interaction kiosque (sans genre_id)
+        const interactionResult = await pool.query(
+            'INSERT INTO kiosque_interactions (discotheque_id, entree_id) VALUES ($1, $2) RETURNING *',
+            [discotheque_id || 1, entree_id]
+        );
+
+        res.status(201).json(interactionResult.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur lors de la création de l\'interaction kiosque' });
+    }
+}
+
+async function assignVestiaireToInteraction(req, res) {
+    try {
+        const { interaction_id, numero_vestiaire, discotheque_id } = req.body;
+        const interaction = await pool.query('SELECT entree_id FROM kiosque_interactions WHERE id = $1', [interaction_id]);
+        if (interaction.rows.length === 0) {
+            return res.status(404).json({ error: 'Interaction non trouvée' });
+        }
+
+        const vestiaireResult = await pool.query(
+            'INSERT INTO vestiaires (numero_vestiaire, statut, entree_id, discotheque_id) VALUES ($1, $2, $3, $4) RETURNING *',
+            [numero_vestiaire, 'occupé', interaction.rows[0].entree_id, discotheque_id || 1]
+        );
+
+        const updateInteraction = await pool.query(
+            'UPDATE kiosque_interactions SET vestiaire_id = $1 WHERE id = $2 RETURNING *',
+            [vestiaireResult.rows[0].id, interaction_id]
+        );
+
+        res.json(updateInteraction.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur lors de l\'assignation du vestiaire' });
+    }
+}
+
+async function getKiosqueInteractions(req, res) {
+    try {
+        // Requête simplifiée sans genres
+        const result = await pool.query(
+            'SELECT ki.*, e.tarif, v.numero_vestiaire FROM kiosque_interactions ki ' +
+            'LEFT JOIN entrees e ON ki.entree_id = e.id ' +
+            'LEFT JOIN vestiaires v ON ki.vestiaire_id = v.id ' +
+            'WHERE ki.discotheque_id = $1',
+            [req.query.discotheque_id || 1]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur lors de la récupération des interactions kiosque' });
+    }
+}
+
+// ============================================================
+// NOUVELLES FONCTIONS POUR LE WORKFLOW KIOSQUE
+// ============================================================
+
+/**
+ * 🆕 INTERFACE 1: Récupérer la capacité disponible pour le kiosque
+ * Utilisé pour le polling en temps réel
+ */
+async function getKiosqueCapacity(req, res) {
+    try {
+        const userId = req.user.id;
+
+        console.log('📊 [Kiosque] Récupération capacité pour user:', userId);
+
+        // Récupérer la capacité de la discothèque de l'utilisateur
+        const query = `
+            SELECT 
+                c.max,
+                c.current,
+                c.max - c.current as remaining,
+                d.nom as discotheque_nom,
+                d.id as discotheque_id
+            FROM capacite c
+            JOIN discotheques d ON c.discotheque_id = d.id
+            WHERE c.user_id = $1
+            ORDER BY c.id DESC
+            LIMIT 1
+        `;
+
+        const result = await pool.query(query, [userId]);
+
+        if (result.rows.length === 0) {
+            console.warn('⚠️ [Kiosque] Aucune capacité trouvée pour user:', userId);
+            // Retourner une capacité par défaut si aucune n'existe
+            return res.json({
+                max: 400,
+                current: 0,
+                remaining: 400,
+                discotheque_nom: 'Discothèque',
+                discotheque_id: null
+            });
+        }
+
+        const capacity = result.rows[0];
+
+        console.log(`✅ [Kiosque] Capacité: ${capacity.current}/${capacity.max} (Reste: ${capacity.remaining})`);
+
+        res.json(capacity);
+    } catch (error) {
+        console.error('❌ [Kiosque] Erreur récupération capacité:', error);
+        res.status(500).json({ 
+            error: 'Erreur lors de la récupération de la capacité',
+            details: error.message 
+        });
+    }
+}
+
+/**
+ * 🆕 INTERFACE 1: Créer une session kiosque (après validation Interface 1)
+ * Note: Pour l'instant, on ne crée pas la session DB immédiatement
+ * Elle sera créée à l'Interface 4 (validation finale)
+ * Cette fonction est prête pour une évolution future
+ */
+async function createKiosqueSession(req, res) {
+    try {
+        const userId = req.user.id;
+        const { nombre_personnes, capacite_restante } = req.body;
+
+        // Validation
+        if (!nombre_personnes || nombre_personnes < 1 || nombre_personnes > 40) {
+            return res.status(400).json({ 
+                error: 'Nombre de personnes invalide (doit être entre 1 et 40)' 
+            });
+        }
+
+        // Récupérer la discothèque de l'utilisateur
+        const discoQuery = `
+            SELECT id FROM discotheques WHERE user_id = $1 LIMIT 1
+        `;
+        const discoResult = await pool.query(discoQuery, [userId]);
+
+        if (discoResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Discothèque non trouvée' });
+        }
+
+        const discotheque_id = discoResult.rows[0].id;
+
+        // Créer la session kiosque
+        const insertQuery = `
+            INSERT INTO kiosk_sessions 
+            (discotheque_id, nombre_personnes, capacite_restante, statut)
+            VALUES ($1, $2, $3, 'en_cours')
+            RETURNING *
+        `;
+
+        const result = await pool.query(insertQuery, [
+            discotheque_id,
+            nombre_personnes,
+            capacite_restante
+        ]);
+
+        console.log(`✅ [Kiosque] Session créée: ${result.rows[0].id} (${nombre_personnes} personnes)`);
+
+        res.status(201).json({
+            success: true,
+            session: result.rows[0]
+        });
+    } catch (error) {
+        console.error('❌ [Kiosque] Erreur création session:', error);
+        res.status(500).json({ 
+            error: 'Erreur lors de la création de la session',
+            details: error.message 
+        });
+    }
+}
+
+/**
+ * 🆕 INTERFACE 4: Valider une session kiosque complète
+ * Appelé au moment de la validation finale avec toute la commande
+ * 
+ * NOTE: Happy Hour (heures creuses) est géré automatiquement par gestion-horaires.js
+ * Les prix dans commande_data sont déjà calculés avec les bons tarifs
+ */
+async function validateKiosqueSession(req, res) {
+    const client = await pool.connect();
+    
+    try {
+        await client.query('BEGIN');
+
+        const userId = req.user.id;
+        const { 
+            nombre_personnes, 
+            commande_data,  // JSON avec toutes les prestations (prix déjà calculés avec Happy Hour)
+            montant_total 
+        } = req.body;
+
+        console.log('🔄 [Kiosque] Début validation session:', {
+            nombre_personnes,
+            montant_total
+        });
+
+        // 1. Récupérer la discothèque
+        const discoQuery = `
+            SELECT id FROM discotheques WHERE user_id = $1 LIMIT 1
+        `;
+        const discoResult = await client.query(discoQuery, [userId]);
+
+        if (discoResult.rows.length === 0) {
+            throw new Error('Discothèque non trouvée');
+        }
+
+        const discotheque_id = discoResult.rows[0].id;
+
+        // 2. Vérifier la capacité disponible EN TEMPS RÉEL
+        const capacityQuery = `
+            SELECT max, current, (max - current) as remaining
+            FROM capacite
+            WHERE discotheque_id = $1
+            FOR UPDATE  -- Lock pour éviter les race conditions
+        `;
+        const capacityResult = await client.query(capacityQuery, [discotheque_id]);
+
+        if (capacityResult.rows.length === 0) {
+            throw new Error('Capacité non configurée');
+        }
+
+        const { remaining } = capacityResult.rows[0];
+
+        // 3. Vérifier qu'il reste assez de places
+        if (nombre_personnes > remaining) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({
+                error: 'Capacité insuffisante',
+                remaining: remaining,
+                requested: nombre_personnes
+            });
+        }
+
+        // 4. Décompter la capacité
+        const updateCapacityQuery = `
+            UPDATE capacite
+            SET current = current + $1
+            WHERE discotheque_id = $2
+            RETURNING current, max
+        `;
+        const updateResult = await client.query(updateCapacityQuery, [
+            nombre_personnes,
+            discotheque_id
+        ]);
+
+        console.log(`📊 [Kiosque] Capacité mise à jour: ${updateResult.rows[0].current}/${updateResult.rows[0].max}`);
+
+        // 5. Créer la session kiosque validée
+        const sessionQuery = `
+            INSERT INTO kiosk_sessions 
+            (discotheque_id, nombre_personnes, capacite_restante, statut, commande_data, montant_total, completed_at)
+            VALUES ($1, $2, $3, 'valide', $4, $5, NOW())
+            RETURNING *
+        `;
+        const sessionResult = await client.query(sessionQuery, [
+            discotheque_id,
+            nombre_personnes,
+            remaining,
+            JSON.stringify(commande_data),
+            montant_total
+        ]);
+
+        await client.query('COMMIT');
+
+        console.log(`✅ [Kiosque] Session validée: ${sessionResult.rows[0].id}`);
+
+        res.json({
+            success: true,
+            session: sessionResult.rows[0],
+            new_capacity: updateResult.rows[0]
+        });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('❌ [Kiosque] Erreur validation session:', error);
+        res.status(500).json({ 
+            error: 'Erreur lors de la validation de la session',
+            details: error.message 
+        });
+    } finally {
+        client.release();
+    }
+}
+
+/**
+ * 🆕 Récupérer les statistiques des sessions kiosque
+ */
+async function getKiosqueStats(req, res) {
+    try {
+        const userId = req.user.id;
+
+        // Récupérer la discothèque
+        const discoQuery = `
+            SELECT id FROM discotheques WHERE user_id = $1 LIMIT 1
+        `;
+        const discoResult = await pool.query(discoQuery, [userId]);
+
+        if (discoResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Discothèque non trouvée' });
+        }
+
+        const discotheque_id = discoResult.rows[0].id;
+
+        // Récupérer les stats
+        const statsQuery = `
+            SELECT 
+                COUNT(*) as total_sessions,
+                COUNT(CASE WHEN statut = 'valide' THEN 1 END) as sessions_validees,
+                COUNT(CASE WHEN statut = 'abandonne' THEN 1 END) as sessions_abandonnees,
+                SUM(CASE WHEN statut = 'valide' THEN nombre_personnes ELSE 0 END) as total_personnes,
+                SUM(CASE WHEN statut = 'valide' THEN montant_total ELSE 0 END) as chiffre_affaires,
+                ROUND(
+                    (COUNT(CASE WHEN statut = 'valide' THEN 1 END)::DECIMAL / NULLIF(COUNT(*), 0) * 100),
+                    2
+                ) as taux_conversion
+            FROM kiosk_sessions
+            WHERE discotheque_id = $1
+              AND created_at >= CURRENT_DATE
+        `;
+
+        const statsResult = await pool.query(statsQuery, [discotheque_id]);
+
+        res.json(statsResult.rows[0]);
+    } catch (error) {
+        console.error('❌ [Kiosque] Erreur récupération stats:', error);
+        res.status(500).json({ 
+            error: 'Erreur lors de la récupération des statistiques',
+            details: error.message 
+        });
+    }
+}
+
+// ============================================================
+// EXPORTS
+// ============================================================
+
+module.exports = { 
+    // Fonctions existantes (simplifiées sans genres)
+    createKiosqueInteraction, 
+    assignVestiaireToInteraction, 
+    getKiosqueInteractions,
+    
+    // Nouvelles fonctions
+    getKiosqueCapacity,
+    createKiosqueSession,
+    validateKiosqueSession,
+    getKiosqueStats
+};
