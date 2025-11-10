@@ -1,0 +1,351 @@
+/* public/css/kiosk-interface-1.css - Interface 1: Nombre de personnes */
+
+/* ===== SECTION INTERFACE 1 - NOMBRE DE PERSONNES ===== */
+
+#kiosk-interface-1 {
+    position: relative;
+    padding-top: 40px;
+}
+
+#kiosk-interface-1.active {
+    display: block !important;
+}
+
+/* Container principal de l'interface 1 */
+.kiosk-interface-1-container {
+    background-color: transparent;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    margin: 60px auto 20px auto;
+    padding: 40px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+/* Effet de fond avec dégradé */
+.kiosk-interface-1-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(to right, 
+            rgba(255, 255, 255, 0.03), 
+            rgba(255, 255, 255, 0.06), 
+            rgba(255, 255, 255, 0.03)
+        ),
+        #000000d4;
+    opacity: 1;
+    z-index: -1;
+}
+
+/* Barre lumineuse en haut */
+.kiosk-interface-1-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0) 5%,
+        rgba(255, 255, 255, 0.2) 15%,
+        rgba(255, 255, 255, 0.4) 25%,
+        rgba(255, 255, 255, 0.7) 40%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(255, 255, 255, 0.7) 60%,
+        rgba(255, 255, 255, 0.4) 75%,
+        rgba(255, 255, 255, 0.2) 85%,
+        rgba(255, 255, 255, 0) 95%,
+        transparent 100%
+    );
+    animation: luxuryPulse 4s ease-in-out infinite;
+    filter: blur(3px);
+    z-index: -1;
+}
+
+@keyframes luxuryPulse {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Header de l'interface 1 */
+.kiosk-interface-1-header {
+    background-color: transparent;
+    border: none;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Nom de la discothèque */
+.kiosk-interface-1-header h1 {
+    padding: 0;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Date */
+.kiosk-interface-1-header .subtitle {
+    font-size: 18px;
+    margin-bottom: 40px;
+    color: #b3b3b3;
+}
+
+/* Question principale */
+.kiosk-interface-1-question {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 50px;
+    letter-spacing: 0.5px;
+}
+
+/* Section du compteur */
+.kiosk-interface-1-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 50px;
+    padding: 30px 0;
+}
+
+/* Boutons - et + */
+.kiosk-interface-1-qty-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background-color: #232323;
+    color: white;
+    font-size: 32px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.kiosk-interface-1-qty-btn:hover {
+    background-color: #444;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 255, 255, 0.2);
+}
+
+.kiosk-interface-1-qty-btn:active {
+    background-color: #555;
+    transform: scale(0.95);
+}
+
+.kiosk-interface-1-qty-btn:disabled {
+    background-color: #1a1a1a;
+    color: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Affichage de la quantité */
+.kiosk-interface-1-qty-value {
+    font-size: 56px;
+    font-weight: 700;
+    color: #ffffff;
+    min-width: 120px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Messages d'avertissement et d'information */
+.kiosk-interface-1-warnings {
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+/* Message principal d'avertissement */
+.kiosk-interface-1-warning {
+    background-color: rgba(255, 200, 0, 0.1);
+    border: 1px solid rgba(255, 200, 0, 0.3);
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 16px;
+    color: #ffc800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.kiosk-interface-1-warning .icon {
+    font-size: 20px;
+}
+
+/* Message de capacité (affiché uniquement si <20 places) */
+.kiosk-interface-1-capacity-alert {
+    background-color: rgba(255, 100, 100, 0.1);
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 16px;
+    color: #ff6464;
+    display: none; /* Caché par défaut */
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.kiosk-interface-1-capacity-alert.visible {
+    display: flex;
+}
+
+.kiosk-interface-1-capacity-alert .icon {
+    font-size: 20px;
+}
+
+/* Message maximum (affiché uniquement à 40 personnes) */
+.kiosk-interface-1-max-message {
+    background-color: rgba(255, 68, 68, 0.15);
+    border: 1px solid rgba(255, 68, 68, 0.4);
+    border-radius: 8px;
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #ff4444;
+    display: none; /* Caché par défaut */
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    animation: pulseAlert 2s ease-in-out infinite;
+}
+
+.kiosk-interface-1-max-message.visible {
+    display: flex;
+}
+
+@keyframes pulseAlert {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+/* Bouton de validation */
+.kiosk-interface-1-validate-btn {
+    padding: 20px 40px;
+    background: linear-gradient(to right, #9733EE, #DA22FF);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 20px rgba(151, 51, 238, 0.4);
+}
+
+.kiosk-interface-1-validate-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 10px 30px rgba(151, 51, 238, 0.6);
+    transform: translateY(-2px);
+}
+
+.kiosk-interface-1-validate-btn:active {
+    opacity: 0.8;
+    transform: translateY(0);
+}
+
+.kiosk-interface-1-validate-btn:disabled {
+    background: #201e35;
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ===== RESPONSIVE POUR ÉCRAN 22 POUCES VERTICAL ===== */
+
+/* Pour écran vertical (portrait) */
+@media screen and (orientation: portrait) and (min-height: 1920px) {
+    .kiosk-interface-1-container {
+        max-width: 800px;
+        padding: 60px;
+    }
+
+    .kiosk-interface-1-header h1 {
+        font-size: 36px;
+        margin-bottom: 16px;
+    }
+
+    .kiosk-interface-1-header .subtitle {
+        font-size: 22px;
+        margin-bottom: 60px;
+    }
+
+    .kiosk-interface-1-question {
+        font-size: 32px;
+        margin-bottom: 80px;
+    }
+
+    .kiosk-interface-1-qty-btn {
+        width: 80px;
+        height: 80px;
+        font-size: 40px;
+    }
+
+    .kiosk-interface-1-qty-value {
+        font-size: 72px;
+        min-width: 160px;
+    }
+
+    .kiosk-interface-1-validate-btn {
+        font-size: 28px;
+        padding: 25px 50px;
+    }
+}
+
+/* Animation d'entrée de l'interface */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#kiosk-interface-1.active .kiosk-interface-1-container {
+    animation: fadeInUp 0.5s ease-out;
+}
