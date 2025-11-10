@@ -1,0 +1,77 @@
+-- Table: public.kiosque_sessions
+
+-- DROP TABLE IF EXISTS public.kiosque_sessions;
+
+CREATE TABLE IF NOT EXISTS public.kiosque_sessions
+(
+    id integer NOT NULL DEFAULT nextval('kiosque_sessions_id_seq'::regclass),
+    session_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    discotheque_id integer,
+    user_id integer,
+    statut character varying(20) COLLATE pg_catalog."default" DEFAULT 'en_cours'::character varying,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    nombre_personnes integer,
+    capacite_restante integer,
+    commande_data jsonb DEFAULT '{}'::jsonb,
+    montant_total numeric(10,2) DEFAULT 0.00,
+    completed_at timestamp without time zone,
+    CONSTRAINT kiosque_sessions_pkey PRIMARY KEY (id),
+    CONSTRAINT kiosque_sessions_session_id_key UNIQUE (session_id),
+    CONSTRAINT fk_discotheque FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT fk_user FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT kiosque_sessions_nombre_personnes_check CHECK (nombre_personnes >= 1 AND nombre_personnes <= 40)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.kiosque_sessions
+    OWNER to postgres;
+-- Index: idx_kiosk_sessions_created
+
+-- DROP INDEX IF EXISTS public.idx_kiosk_sessions_created;
+
+CREATE INDEX IF NOT EXISTS idx_kiosk_sessions_created
+    ON public.kiosque_sessions USING btree
+    (created_at ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_kiosk_sessions_statut
+
+-- DROP INDEX IF EXISTS public.idx_kiosk_sessions_statut;
+
+CREATE INDEX IF NOT EXISTS idx_kiosk_sessions_statut
+    ON public.kiosque_sessions USING btree
+    (statut COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_kiosque_sessions_discotheque
+
+-- DROP INDEX IF EXISTS public.idx_kiosque_sessions_discotheque;
+
+CREATE INDEX IF NOT EXISTS idx_kiosque_sessions_discotheque
+    ON public.kiosque_sessions USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_kiosque_sessions_session_id
+
+-- DROP INDEX IF EXISTS public.idx_kiosque_sessions_session_id;
+
+CREATE INDEX IF NOT EXISTS idx_kiosque_sessions_session_id
+    ON public.kiosque_sessions USING btree
+    (session_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+-- Trigger: trigger_update_kiosk_session_completed_at
+
+-- DROP TRIGGER IF EXISTS trigger_update_kiosk_session_completed_at ON public.kiosque_sessions;
+
+CREATE OR REPLACE TRIGGER trigger_update_kiosk_session_completed_at
+    BEFORE UPDATE 
+    ON public.kiosque_sessions
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_kiosk_session_completed_at();
