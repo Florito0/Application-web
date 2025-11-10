@@ -1,0 +1,51 @@
+-- Table: public.kiosque_interactions
+
+-- DROP TABLE IF EXISTS public.kiosque_interactions;
+
+CREATE TABLE IF NOT EXISTS public.kiosque_interactions
+(
+    id integer NOT NULL DEFAULT nextval('kiosque_interactions_id_seq'::regclass),
+    discotheque_id integer NOT NULL,
+    entree_id integer,
+    vestiaire_id integer,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer,
+    CONSTRAINT kiosque_interactions_pkey PRIMARY KEY (id),
+    CONSTRAINT kiosque_entree_id_fkey FOREIGN KEY (entree_id)
+        REFERENCES public.entrees (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT kiosque_interactions_discotheque_id_fkey FOREIGN KEY (discotheque_id)
+        REFERENCES public.discotheques (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT kiosque_interactions_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
+    CONSTRAINT kiosque_vestiaire_id_fkey FOREIGN KEY (vestiaire_id)
+        REFERENCES public.vestiaires (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.kiosque_interactions
+    OWNER to postgres;
+-- Index: idx_kiosque_interactions_created_at
+
+-- DROP INDEX IF EXISTS public.idx_kiosque_interactions_created_at;
+
+CREATE INDEX IF NOT EXISTS idx_kiosque_interactions_created_at
+    ON public.kiosque_interactions USING btree
+    (created_at ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: idx_kiosque_interactions_discotheque_id
+
+-- DROP INDEX IF EXISTS public.idx_kiosque_interactions_discotheque_id;
+
+CREATE INDEX IF NOT EXISTS idx_kiosque_interactions_discotheque_id
+    ON public.kiosque_interactions USING btree
+    (discotheque_id ASC NULLS LAST)
+    TABLESPACE pg_default;
