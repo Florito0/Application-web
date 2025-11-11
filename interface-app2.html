@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/gestion-capacite.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/gestion-entrees.css">
+    <link rel="stylesheet" href="/css/kiosk-interface-2.css">
     <link rel="stylesheet" href="/css/kiosk-interface-1.css">
     <link rel="stylesheet" href="/css/kiosk-error-modal.css">
     <link rel="stylesheet" href="/css/gestion-vestiaires.css">
@@ -809,6 +810,9 @@
 
         <div class="content-section kiosk-container" id="kiosk-view" style="display: none;">
             <button class="toggle-back-btn" id="toggle-back-btn">Passer au Tableau de Bord</button>
+            <button class="kiosk-back-btn" id="kiosk-back-btn" style="display: none;">
+        ← Retour
+    </button>
             <div class="kiosk-header">
                 <!-- Le contenu sera généré dynamiquement par updateKioskHeader() -->
             </div>
@@ -817,7 +821,7 @@
                     <h2>Accès Soirée</h2>
                     <div id="access-items-kiosk"></div>
                 </div>
-                <div class="kiosk-separator"></div>
+                <div class="kiosk-separator" id="kiosk-separator"></div>
                 <div class="kiosk-category" id="pure-soiree-kiosk">
                     <h2>Pure Soirée</h2>
                     <div id="pure-items-kiosk"></div>
@@ -834,7 +838,7 @@
                     <div id="kiosk-total-discount"></div>
                     <div id="kiosk-total-price">0€</div>
                 </div>
-                <button id="validate-kiosk-btn" class="kiosk-checkout-btn" onclick="validateKioskOrder()">
+                <button id="validate-kiosk-btn" class="kiosk-checkout-btn">
     VALIDER POUR X PERSONNES
 </button>
             </div>
@@ -859,6 +863,7 @@
     <script src="/js/gestion-horaires.js"></script>
     <script src="/js/kiosk-validation.js"></script>
     <script src="/js/kiosk-workflow.js"></script>
+    <script src="/js/kiosk-interface-2.js"></script>
     <script src="/js/gestion-entrees.js"></script>
     <script src="/js/gestion-vestiaires.js"></script>
     <script src="/js/vestiaire-kiosque.js"></script>
