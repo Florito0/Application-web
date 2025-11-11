@@ -1,5 +1,4 @@
 // interface-app.js - VERSION COMPLÈTE CORRIGÉE
-// 10 novembre 2024
 
 // --- VARIABLES GLOBALES ---
 let gestionCodesInstance = null;
@@ -11,6 +10,7 @@ let gestionEntreesInstance = null;
 let gestionVestiairesInstance = null;
 let vestiaireKiosqueInstance = null;
 let kioskWorkflowInstance = null;
+let kioskInterface2Instance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cityInput = document.getElementById('city');
     const postalCodeInput = document.getElementById('postalCode');
     const addressInput = document.getElementById('address');
-    const countryInput = document.getElementById('country');
     const phoneInput = document.getElementById('phone');
     const emailInput = document.getElementById('email');
     const countryCodeInput = document.getElementById('countryCode');
@@ -61,247 +60,247 @@ document.addEventListener('DOMContentLoaded', () => {
     const alert3Percentage = document.getElementById('alert3-percentage');
     const alert3Color = document.getElementById('alert3-color');
 
-    // --- FONCTION PRINCIPALE ---
-    async function showSection(targetId) {
-        if (!targetId) return;
-        
-        console.log('🔄 [Interface-App] Navigation vers:', targetId);
+    async function showSection(targetId, options = {}) {
+    if (!targetId) return;
+    
+    const mode = options.mode || 'client'; // Par défaut : mode client
+    
+    console.log('🔄 [Interface-App] Navigation vers:', targetId, 'Mode:', mode);
+    console.log('📍 [Interface-App] Source de l\'appel:', new Error().stack);
 
-        // Réinitialiser TOUTES les sections
-        contentSections.forEach(section => {
-            section.classList.remove('active');
-            section.style.display = 'none';
-        });
-        
-        // Afficher la section cible
-        const sectionToShow = document.getElementById(targetId);
-        if (sectionToShow) {
-            sectionToShow.classList.add('active');
-            sectionToShow.style.display = 'block';
-            sectionToShow.offsetHeight; // Force reflow
+    // Réinitialiser TOUTES les sections
+    contentSections.forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+    });
+    
+    // Afficher la section cible
+    const sectionToShow = document.getElementById(targetId);
+    if (sectionToShow) {
+        sectionToShow.classList.add('active');
+        sectionToShow.style.display = 'block';
+        sectionToShow.offsetHeight; // Force reflow
+    }
+
+    // --- GESTION DES SECTIONS ---
+
+    // GESTION DE CAPACITÉ
+    if (targetId === 'gestion-capacite') {
+        if (!gestionCapaciteInstance) {
+            gestionCapaciteInstance = new GestionCapacite('gestion-capacite');
+            gestionCapaciteInstance.init();
+        } else {
+            gestionCapaciteInstance.loadData();
         }
+    }
 
-        // --- GESTION DES SECTIONS ---
-
-        // GESTION DE CAPACITÉ
-        if (targetId === 'gestion-capacite') {
-            if (!gestionCapaciteInstance) {
-                gestionCapaciteInstance = new GestionCapacite('gestion-capacite');
-                gestionCapaciteInstance.init();
-            } else {
-                gestionCapaciteInstance.loadData();
-            }
+    // GESTION DES ENTRÉES
+    if (targetId === 'gestion-tickets-entree') {
+        console.log('📝 [Interface-App] Chargement gestion entrées');
+        
+        const currentPrestations = document.querySelector('.current-prestations');
+        if (currentPrestations) {
+            currentPrestations.style.display = 'block';
         }
-
-        // GESTION DES ENTRÉES
-        if (targetId === 'gestion-tickets-entree') {
-            console.log('📝 [Interface-App] Chargement gestion entrées');
-            
-            const currentPrestations = document.querySelector('.current-prestations');
-            if (currentPrestations) {
-                currentPrestations.style.display = 'block';
+        
+        if (!gestionEntreesInstance) {
+            try {
+                gestionEntreesInstance = new GestionEntrees();
+                await gestionEntreesInstance.init();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur initialisation GestionEntrees:', error);
             }
-            
-            if (!gestionEntreesInstance) {
-                try {
-                    gestionEntreesInstance = new GestionEntrees();
-                    await gestionEntreesInstance.init();
-                } catch (error) {
-                    console.error('❌ [Interface-App] Erreur initialisation GestionEntrees:', error);
+        } else {
+            try {
+                await gestionEntreesInstance.loadData();
+                if (typeof gestionEntreesInstance.initializeInterface === 'function') {
+                    gestionEntreesInstance.initializeInterface();
                 }
-            } else {
-                try {
-                    await gestionEntreesInstance.loadData();
-                    if (typeof gestionEntreesInstance.initializeInterface === 'function') {
-                        gestionEntreesInstance.initializeInterface();
-                    }
-                } catch (error) {
-                    console.error('❌ [Interface-App] Erreur rechargement GestionEntrees:', error);
-                }
-            }
-            
-            if (gestionEntreesInstance && typeof gestionEntreesInstance.resetInterfaceState === 'function') {
-                gestionEntreesInstance.resetInterfaceState();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur rechargement GestionEntrees:', error);
             }
         }
         
-        // NAVIGATION VERS LE KIOSQUE → Redirige vers Interface 1
-        if (targetId === 'kiosk-view') {
-            console.log('🔄 [Interface-App] Redirection vers Interface 1 Kiosque');
-            
-            // Debug : Vérifier si la classe est disponible
-            if (typeof window.KioskWorkflow === 'undefined') {
-                console.error('❌ [Interface-App] KioskWorkflow non disponible pour kiosk-view – chargement échoué');
-                return;  // Arrête pour ne pas planter
-            }
-            
-            // Cacher kiosk-view
-            const kioskView = document.getElementById('kiosk-view');
-            if (kioskView) {
-                kioskView.style.display = 'none';
-                kioskView.classList.remove('active');
-            }
-            
-            // Afficher kiosk-interface-1
-            const interface1 = document.getElementById('kiosk-interface-1');
-            if (interface1) {
-                interface1.style.display = 'block';
-                interface1.classList.add('active');
-                
-                if (!kioskWorkflowInstance) {
-                    try {
-                        console.log('🔧 [Interface-App] Création nouvelle instance KioskWorkflow pour kiosk-view');
-                        kioskWorkflowInstance = new window.KioskWorkflow();
-                        await kioskWorkflowInstance.init();
-                    } catch (error) {
-                        console.error('❌ [Interface-App] Erreur initialisation KioskWorkflow pour kiosk-view:', error);
-                    }
-                } else {
-                    try {
-                        console.log('🔄 [Interface-App] Réinitialisation instance KioskWorkflow existante pour kiosk-view');
-                        await kioskWorkflowInstance.reset();
-                        await kioskWorkflowInstance.loadCapacity();
-                    } catch (error) {
-                        console.error('❌ [Interface-App] Erreur réinitialisation KioskWorkflow pour kiosk-view:', error);
-                    }
-                }
-            }
-            
-            return; // Arrêter l'exécution
+        if (gestionEntreesInstance && typeof gestionEntreesInstance.resetInterfaceState === 'function') {
+            gestionEntreesInstance.resetInterfaceState();
         }
-
-        // INTERFACE 1 KIOSQUE
-        if (targetId === 'kiosk-interface-1') {
-            console.log('🎯 [Interface-App] Chargement Interface 1 Kiosque');
-            
-            // Debug : Vérifier si la classe est disponible
-            if (typeof window.KioskWorkflow === 'undefined') {
-                console.error('❌ [Interface-App] KioskWorkflow non disponible pour kiosk-interface-1 – chargement échoué');
-                return;  // Arrête pour ne pas planter
-            }
-            
-            if (!kioskWorkflowInstance) {
-                try {
-                    console.log('🔧 [Interface-App] Création nouvelle instance KioskWorkflow');
-                    kioskWorkflowInstance = new window.KioskWorkflow();
-                    await kioskWorkflowInstance.init();
-                } catch (error) {
-                    console.error('❌ [Interface-App] Erreur initialisation KioskWorkflow:', error);
-                }
-            } else {
-                try {
-                    console.log('🔄 [Interface-App] Réinitialisation instance KioskWorkflow existante');
-                    await kioskWorkflowInstance.reset();
-                    await kioskWorkflowInstance.loadCapacity();
-                } catch (error) {
-                    console.error('❌ [Interface-App] Erreur réinitialisation KioskWorkflow:', error);
-                }
-            }
-        }
-
-        // GESTION DES TICKETS VESTIAIRE
-        if (targetId === 'gestion-tickets-vestiaire') {
-            console.log('👔 [Interface-App] Chargement gestion vestiaires');
-            
-            if (!gestionVestiairesInstance) {
-                try {
-                    gestionVestiairesInstance = new GestionVestiaires();
-                    await gestionVestiairesInstance.init();
-                } catch (error) {
-                    console.error('❌ [Interface-App] Erreur initialisation GestionVestiaires:', error);
-                }
-            } else {
-                await gestionVestiairesInstance.loadArticles();
-            }
-        }
-
-        // VESTIAIRE KIOSQUE
-        if (targetId === 'vestiaire-selection') {
-            console.log('🎽 [Interface-App] Affichage sélection vestiaire kiosque');
-            
-            if (!vestiaireKiosqueInstance) {
-                try {
-                    vestiaireKiosqueInstance = new VestiaireKiosque();
-                    await vestiaireKiosqueInstance.init();
-                } catch (error) {
-                    console.error('❌ [Interface-App] Erreur initialisation VestiaireKiosque:', error);
-                }
-            } else {
-                await vestiaireKiosqueInstance.loadArticles();
-                vestiaireKiosqueInstance.resetSelections();
-            }
+    }
+    
+    // NAVIGATION VERS LE KIOSQUE (kiosk-view = Interface 2)
+    if (targetId === 'kiosk-view') {
+        console.log('🖥️ [Interface-App] Chargement Kiosk Interface 2 - Mode:', mode);
+        
+        // Vérifier que la classe KioskInterface2 est disponible
+        if (typeof KioskInterface2 === 'undefined') {
+            console.error('❌ [Interface-App] KioskInterface2 non disponible – chargement échoué');
+            return;
         }
         
-        // GESTION DES CODES JOUR
-        if (targetId === 'gestion-code-jour') {
-            if (!gestionCodesInstance) {
-                gestionCodesInstance = new GestionCodesJour();
-                gestionCodesInstance.init();
-            } else {
-                gestionCodesInstance.loadMonthData(gestionCodesInstance.currentYear, gestionCodesInstance.currentMonth);
-            }
+        // Récupérer les éléments
+        const kioskView = document.getElementById('kiosk-view');
+        const toggleBackBtn = document.getElementById('toggle-back-btn');
+        const kioskBackBtn = document.getElementById('kiosk-back-btn');
+        
+        // Appliquer le mode
+        if (mode === 'admin') {
+            kioskView.classList.add('admin-mode');
+            kioskView.classList.remove('client-mode');
+            if (toggleBackBtn) toggleBackBtn.style.display = 'block';
+            if (kioskBackBtn) kioskBackBtn.style.display = 'none';
+        } else {
+            kioskView.classList.add('client-mode');
+            kioskView.classList.remove('admin-mode');
+            if (toggleBackBtn) toggleBackBtn.style.display = 'none';
+            if (kioskBackBtn) kioskBackBtn.style.display = 'block';
         }
         
-        // GESTION DU PROFIL
-        if (targetId === 'profile') {
-            if (!profileInstance) {
-                profileInstance = new ProfileManager();
-                profileInstance.init();
-            } else {
-                profileInstance.loadProfileData();
+        // Initialiser ou rafraîchir l'instance
+        if (!kioskInterface2Instance) {
+            try {
+                console.log('🔧 [Interface-App] Création nouvelle instance KioskInterface2');
+                kioskInterface2Instance = new KioskInterface2();
+                await kioskInterface2Instance.init();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur initialisation KioskInterface2:', error);
             }
-        }
-        
-        // GESTION DES HORAIRES
-        if (targetId === 'gestion-heures-creuses') {
-            if (!gestionHorairesInstance) {
-                gestionHorairesInstance = new GestionHoraires();
-                const section = document.getElementById('gestion-heures-creuses');
-                if (section) {
-                    const backButtonHTML = '<a href="#" class="back-button" data-target="gestion">← Retour</a>';
-                    section.innerHTML = backButtonHTML + gestionHorairesInstance.render();
-                    
-                    section.querySelector('.back-button').addEventListener('click', (e) => {
-                        e.preventDefault();
-                        showSection('gestion');
-                    });
-
-                    const container = section.querySelector('.horaires-container');
-                    gestionHorairesInstance.setContainer(container);
-                }
-            } else {
-                gestionHorairesInstance.loadHoraires().then(() => {
-                    gestionHorairesInstance.initializeForm();
-                });
-            }
-        }
-
-        // GESTION DU KIOSQUE PRINCIPAL - Redirection vers Interface 1
-        if (targetId === 'kiosque') {
-            console.log('🔄 [Interface-App] Menu Kiosque cliqué → Redirection Interface 1');
-            
-            // Debug : Vérifier si la classe est disponible
-            if (typeof window.KioskWorkflow === 'undefined') {
-                console.error('❌ [Interface-App] KioskWorkflow non disponible pour kiosque – chargement échoué');
-                return;  // Arrête pour ne pas planter
-            }
-            
-            // Rediriger directement vers l'interface 1 (déclaration nombre de personnes)
-            // Plus besoin de genre-selection qui a été supprimé
-            showSection('kiosk-interface-1');
-            return; // Arrêter l'exécution pour ne pas continuer la logique
-        }
-
-        // GESTION DE LA CONFIGURATION
-        if (targetId.startsWith('configuration')) {
-            if (!configurationInstance) {
-                configurationInstance = new ConfigurationManager();
-                configurationInstance.init();
-            } else {
-                configurationInstance.resetAndReload();
+        } else {
+            try {
+                console.log('🔄 [Interface-App] Rafraîchissement instance KioskInterface2');
+                await kioskInterface2Instance.refresh();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur rafraîchissement KioskInterface2:', error);
             }
         }
     }
+
+    // INTERFACE 1 KIOSQUE
+    if (targetId === 'kiosk-interface-1') {
+        console.log('🎯 [Interface-App] Chargement Interface 1 Kiosque');
+        
+        if (typeof KioskWorkflow === 'undefined') {
+            console.error('❌ [Interface-App] KioskWorkflow non disponible pour kiosk-interface-1 – chargement échoué');
+            return;
+        }
+        
+        if (!kioskWorkflowInstance) {
+            try {
+                console.log('🔧 [Interface-App] Création nouvelle instance KioskWorkflow');
+                kioskWorkflowInstance = new KioskWorkflow();
+                await kioskWorkflowInstance.init();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur initialisation KioskWorkflow:', error);
+            }
+        } else {
+            try {
+                console.log('🔄 [Interface-App] Réinitialisation instance KioskWorkflow existante');
+                await kioskWorkflowInstance.reset();
+                await kioskWorkflowInstance.loadCapacity();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur réinitialisation KioskWorkflow:', error);
+            }
+        }
+    }
+
+    // GESTION DES TICKETS VESTIAIRE
+    if (targetId === 'gestion-tickets-vestiaire') {
+        console.log('👔 [Interface-App] Chargement gestion vestiaires');
+        
+        if (!gestionVestiairesInstance) {
+            try {
+                gestionVestiairesInstance = new GestionVestiaires();
+                await gestionVestiairesInstance.init();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur initialisation GestionVestiaires:', error);
+            }
+        } else {
+            await gestionVestiairesInstance.loadArticles();
+        }
+    }
+
+    // VESTIAIRE KIOSQUE
+    if (targetId === 'vestiaire-selection') {
+        console.log('🎽 [Interface-App] Affichage sélection vestiaire kiosque');
+        
+        if (!vestiaireKiosqueInstance) {
+            try {
+                vestiaireKiosqueInstance = new VestiaireKiosque();
+                await vestiaireKiosqueInstance.init();
+            } catch (error) {
+                console.error('❌ [Interface-App] Erreur initialisation VestiaireKiosque:', error);
+            }
+        } else {
+            await vestiaireKiosqueInstance.loadArticles();
+            vestiaireKiosqueInstance.resetSelections();
+        }
+    }
+    
+    // GESTION DES CODES JOUR
+    if (targetId === 'gestion-code-jour') {
+        if (!gestionCodesInstance) {
+            gestionCodesInstance = new GestionCodesJour();
+            gestionCodesInstance.init();
+        } else {
+            gestionCodesInstance.loadMonthData(gestionCodesInstance.currentYear, gestionCodesInstance.currentMonth);
+        }
+    }
+    
+    // GESTION DU PROFIL
+    if (targetId === 'profile') {
+        if (!profileInstance) {
+            profileInstance = new ProfileManager();
+            profileInstance.init();
+        } else {
+            profileInstance.loadProfileData();
+        }
+    }
+    
+    // GESTION DES HORAIRES
+    if (targetId === 'gestion-heures-creuses') {
+        if (!gestionHorairesInstance) {
+            gestionHorairesInstance = new GestionHoraires();
+            const section = document.getElementById('gestion-heures-creuses');
+            if (section) {
+                const backButtonHTML = '<a href="#" class="back-button" data-target="gestion">← Retour</a>';
+                section.innerHTML = backButtonHTML + gestionHorairesInstance.render();
+                
+                section.querySelector('.back-button').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection('gestion');
+                });
+
+                const container = section.querySelector('.horaires-container');
+                gestionHorairesInstance.setContainer(container);
+            }
+        } else {
+            gestionHorairesInstance.loadHoraires().then(() => {
+                gestionHorairesInstance.initializeForm();
+            });
+        }
+    }
+
+    // GESTION DU KIOSQUE PRINCIPAL - Redirection vers Interface 1
+    if (targetId === 'kiosque') {
+        console.log('🔄 [Interface-App] Menu Kiosque cliqué → Redirection Interface 1');
+        
+        if (typeof KioskWorkflow === 'undefined') {
+            console.error('❌ [Interface-App] KioskWorkflow non disponible pour kiosque – chargement échoué');
+            return;
+        }
+        
+        showSection('kiosk-interface-1');
+        return;
+    }
+
+    // GESTION DE LA CONFIGURATION
+    if (targetId.startsWith('configuration')) {
+        if (!configurationInstance) {
+            configurationInstance = new ConfigurationManager();
+            configurationInstance.init();
+        } else {
+            configurationInstance.resetAndReload();
+        }
+    }
+}
 
     // --- AUTRES FONCTIONS ---
     function toggleSidebar() {
@@ -427,33 +426,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (toggleInterfaceBtn) {
-        toggleInterfaceBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('🔄 [Interface-App] Basculement vers le kiosque');
-            
-            contentSections.forEach(section => {
-                section.classList.remove('active');
-                section.style.display = 'none';
-            });
-            
-            await showSection('kiosk-view');
+    toggleInterfaceBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        console.log('🔄 [Interface-App] Basculement vers le kiosque (mode admin)');
+        
+        contentSections.forEach(section => {
+            section.classList.remove('active');
+            section.style.display = 'none';
         });
-    }
+        
+        // ✅ MODE ADMIN
+        await showSection('kiosk-view', { mode: 'admin' });
+    });
+}
 
-    if (toggleBackBtn) {
-        toggleBackBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('🔙 [Interface-App] Retour vers la gestion');
-            
-            const kioskView = document.getElementById('kiosk-view');
-            if (kioskView) {
-                kioskView.style.display = 'none';
-                kioskView.classList.remove('active');
-            }
-            
-            await showSection('gestion-tickets-entree');
-        });
-    }
+    // Bouton retour gérant (existant)
+if (toggleBackBtn) {
+    // IMPORTANT : Supprimer tous les listeners existants
+    const newToggleBackBtn = toggleBackBtn.cloneNode(true);
+    toggleBackBtn.parentNode.replaceChild(newToggleBackBtn, toggleBackBtn);
+    
+    newToggleBackBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Empêcher la propagation
+        
+        console.log('🔙 [Interface-App] Retour GÉRANT vers gestion-tickets-entree');
+        
+        // Cacher kiosk-view
+        const kioskView = document.getElementById('kiosk-view');
+        if (kioskView) {
+            kioskView.style.display = 'none';
+            kioskView.classList.remove('active');
+            kioskView.classList.remove('admin-mode');
+            kioskView.classList.remove('client-mode');
+        }
+        
+        // Cacher Interface 1 (au cas où)
+        const kioskInterface1 = document.getElementById('kiosk-interface-1');
+        if (kioskInterface1) {
+            kioskInterface1.style.display = 'none';
+            kioskInterface1.classList.remove('active');
+        }
+        
+        // Forcer l'affichage de gestion-tickets-entree
+        await showSection('gestion-tickets-entree');
+        
+        console.log('✅ [Interface-App] Retour gérant terminé - gestion-tickets-entree affiché');
+    });
+}
+
+// ✅ NOUVEAU : Bouton retour client
+const kioskBackBtn = document.getElementById('kiosk-back-btn');
+if (kioskBackBtn) {
+    kioskBackBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        console.log('🔙 [Interface-App] Retour Interface 1 (client)');
+        
+        // Retour à Interface 1 (nombre de personnes)
+        await showSection('kiosk-interface-1');
+    });
+}
 
     if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
     if (welcomeModalButton) welcomeModalButton.addEventListener('click', closeModal);
