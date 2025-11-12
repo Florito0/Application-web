@@ -349,3 +349,75 @@
 #kiosk-interface-1.active .kiosk-interface-1-container {
     animation: fadeInUp 0.5s ease-out;
 }
+
+/* ============================================
+   CENTRAGE PLEIN ÉCRAN INTERFACE 1
+   ============================================ */
+
+/* Forcer l'Interface 1 en plein écran quand active */
+#kiosk-interface-1.active {
+    position: fixed;
+    top: 0;
+    left: 220px; /* ✅ CORRECTION : Laisser place à la sidebar */
+    width: calc(100vw - 220px); /* ✅ CORRECTION : Largeur - sidebar */
+    height: 100vh;
+    z-index: 9999;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto;
+    background: transparent;
+}
+
+/* S'assurer que le canvas de fond prend tout l'écran */
+#kiosk-interface-1 #canvas {
+    position: fixed;
+    top: 0;
+    left: 220px; /* ✅ CORRECTION : Décaler pour la sidebar */
+    width: calc(100vw - 220px);
+    height: 100vh;
+    z-index: -1;
+}
+
+/* Centrer le container principal */
+.kiosk-interface-1-container {
+    position: relative;
+    max-width: 600px; /* ✅ CORRECTION : Largeur réduite pour vertical */
+    margin: 0 auto;
+    padding: 60px 40px 40px;
+    z-index: 1;
+}
+
+/* ✅ CORRECTION : NE PAS cacher la sidebar en mode client depuis menu */
+/* body:has(#kiosk-interface-1.active) .sidebar {
+    display: none !important;
+} */
+
+/* S'assurer que main-content garde son décalage */
+.main-content:has(#kiosk-interface-1.active) {
+    margin-left: 220px !important; /* ✅ CORRECTION : Garder décalage sidebar */
+    padding: 0 !important;
+    width: calc(100% - 220px) !important;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+    .kiosk-interface-1-container {
+        padding: 40px 20px;
+        max-width: 100%;
+    }
+    
+    #kiosk-interface-1.active {
+        left: 0;
+        width: 100vw;
+    }
+    
+    #kiosk-interface-1 #canvas {
+        left: 0;
+        width: 100vw;
+    }
+    
+    .main-content:has(#kiosk-interface-1.active) {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
