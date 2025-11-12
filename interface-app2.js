@@ -127,79 +127,101 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // NAVIGATION VERS LE KIOSQUE (kiosk-view = Interface 2)
-    if (targetId === 'kiosk-view') {
-        console.log('🖥️ [Interface-App] Chargement Kiosk Interface 2 - Mode:', mode);
-        
-        // Vérifier que la classe KioskInterface2 est disponible
-        if (typeof KioskInterface2 === 'undefined') {
-            console.error('❌ [Interface-App] KioskInterface2 non disponible – chargement échoué');
-            return;
+if (targetId === 'kiosk-view') {
+    console.log('🖥️ [Interface-App] Chargement Kiosk Interface 2 - Mode:', mode);
+    
+    if (typeof KioskInterface2 === 'undefined') {
+        console.error('❌ [Interface-App] KioskInterface2 non disponible');
+        return;
+    }
+    
+    const kioskView = document.getElementById('kiosk-view');
+    const toggleBackBtn = document.getElementById('toggle-back-btn');
+    const kioskBackBtn = document.getElementById('kiosk-back-btn');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    
+    // ✅ CORRECTION : Gérer sidebar selon le mode
+    if (mode === 'admin') {
+        // Mode admin : Cacher sidebar
+        if (sidebar) sidebar.style.display = 'none';
+        if (mainContent) {
+            mainContent.style.marginLeft = '0';
+            mainContent.style.padding = '0';
         }
         
-        // Récupérer les éléments
-        const kioskView = document.getElementById('kiosk-view');
-        const toggleBackBtn = document.getElementById('toggle-back-btn');
-        const kioskBackBtn = document.getElementById('kiosk-back-btn');
-        
-        // Appliquer le mode
-        if (mode === 'admin') {
-            kioskView.classList.add('admin-mode');
-            kioskView.classList.remove('client-mode');
-            if (toggleBackBtn) toggleBackBtn.style.display = 'block';
-            if (kioskBackBtn) kioskBackBtn.style.display = 'none';
-        } else {
-            kioskView.classList.add('client-mode');
-            kioskView.classList.remove('admin-mode');
-            if (toggleBackBtn) toggleBackBtn.style.display = 'none';
-            if (kioskBackBtn) kioskBackBtn.style.display = 'block';
+        kioskView.classList.add('admin-mode');
+        kioskView.classList.remove('client-mode');
+        if (toggleBackBtn) toggleBackBtn.style.display = 'block';
+        if (kioskBackBtn) kioskBackBtn.style.display = 'none';
+    } else {
+        // Mode client : Garder sidebar
+        if (sidebar) sidebar.style.display = 'block'; // ✅ CORRECTION
+        if (mainContent) {
+            mainContent.style.marginLeft = '220px'; // ✅ CORRECTION
+            mainContent.style.padding = '0';
         }
         
-        // Initialiser ou rafraîchir l'instance
-        if (!kioskInterface2Instance) {
-            try {
-                console.log('🔧 [Interface-App] Création nouvelle instance KioskInterface2');
-                kioskInterface2Instance = new KioskInterface2();
-                await kioskInterface2Instance.init();
-            } catch (error) {
-                console.error('❌ [Interface-App] Erreur initialisation KioskInterface2:', error);
-            }
-        } else {
-            try {
-                console.log('🔄 [Interface-App] Rafraîchissement instance KioskInterface2');
-                await kioskInterface2Instance.refresh();
-            } catch (error) {
-                console.error('❌ [Interface-App] Erreur rafraîchissement KioskInterface2:', error);
-            }
+        kioskView.classList.add('client-mode');
+        kioskView.classList.remove('admin-mode');
+        if (toggleBackBtn) toggleBackBtn.style.display = 'none';
+        if (kioskBackBtn) kioskBackBtn.style.display = 'block';
+    }
+    
+    // Initialiser ou rafraîchir
+    if (!kioskInterface2Instance) {
+        try {
+            kioskInterface2Instance = new KioskInterface2();
+            await kioskInterface2Instance.init();
+        } catch (error) {
+            console.error('❌ [Interface-App] Erreur initialisation:', error);
+        }
+    } else {
+        try {
+            await kioskInterface2Instance.refresh();
+        } catch (error) {
+            console.error('❌ [Interface-App] Erreur rafraîchissement:', error);
         }
     }
+}
 
     // INTERFACE 1 KIOSQUE
-    if (targetId === 'kiosk-interface-1') {
-        console.log('🎯 [Interface-App] Chargement Interface 1 Kiosque');
-        
-        if (typeof KioskWorkflow === 'undefined') {
-            console.error('❌ [Interface-App] KioskWorkflow non disponible pour kiosk-interface-1 – chargement échoué');
-            return;
+if (targetId === 'kiosk-interface-1') {
+    console.log('🎯 [Interface-App] Chargement Interface 1 Kiosque');
+    
+    if (typeof KioskWorkflow === 'undefined') {
+        console.error('❌ [Interface-App] KioskWorkflow non disponible');
+        return;
+    }
+    
+    // ✅ CORRECTION : GARDER la sidebar visible en mode client
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    
+    if (sidebar) {
+        sidebar.style.display = 'block'; // ✅ Garder visible
+    }
+    if (mainContent) {
+        mainContent.style.marginLeft = '220px'; // ✅ Garder décalage
+        mainContent.style.padding = '0';
+    }
+    
+    if (!kioskWorkflowInstance) {
+        try {
+            kioskWorkflowInstance = new KioskWorkflow();
+            await kioskWorkflowInstance.init();
+        } catch (error) {
+            console.error('❌ [Interface-App] Erreur initialisation:', error);
         }
-        
-        if (!kioskWorkflowInstance) {
-            try {
-                console.log('🔧 [Interface-App] Création nouvelle instance KioskWorkflow');
-                kioskWorkflowInstance = new KioskWorkflow();
-                await kioskWorkflowInstance.init();
-            } catch (error) {
-                console.error('❌ [Interface-App] Erreur initialisation KioskWorkflow:', error);
-            }
-        } else {
-            try {
-                console.log('🔄 [Interface-App] Réinitialisation instance KioskWorkflow existante');
-                await kioskWorkflowInstance.reset();
-                await kioskWorkflowInstance.loadCapacity();
-            } catch (error) {
-                console.error('❌ [Interface-App] Erreur réinitialisation KioskWorkflow:', error);
-            }
+    } else {
+        try {
+            await kioskWorkflowInstance.reset();
+            await kioskWorkflowInstance.loadCapacity();
+        } catch (error) {
+            console.error('❌ [Interface-App] Erreur réinitialisation:', error);
         }
     }
+}
 
     // GESTION DES TICKETS VESTIAIRE
     if (targetId === 'gestion-tickets-vestiaire') {
@@ -441,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
     // Bouton retour gérant (existant)
+// Bouton retour gérant - VERSION CORRIGÉE
 if (toggleBackBtn) {
     // IMPORTANT : Supprimer tous les listeners existants
     const newToggleBackBtn = toggleBackBtn.cloneNode(true);
@@ -448,9 +471,21 @@ if (toggleBackBtn) {
     
     newToggleBackBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Empêcher la propagation
+        e.stopPropagation();
         
         console.log('🔙 [Interface-App] Retour GÉRANT vers gestion-tickets-entree');
+        
+        // ✅ NOUVEAU : Réafficher la sidebar
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        
+        if (sidebar) {
+            sidebar.style.display = 'block';
+        }
+        if (mainContent) {
+            mainContent.style.marginLeft = ''; // Réinitialiser
+            mainContent.style.padding = '';
+        }
         
         // Cacher kiosk-view
         const kioskView = document.getElementById('kiosk-view');
@@ -483,6 +518,7 @@ if (kioskBackBtn) {
         console.log('🔙 [Interface-App] Retour Interface 1 (client)');
         
         // Retour à Interface 1 (nombre de personnes)
+        // La sidebar reste cachée car on reste dans le workflow client
         await showSection('kiosk-interface-1');
     });
 }
