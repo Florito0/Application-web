@@ -611,3 +611,115 @@
         font-size: 14px;
     }
 }
+
+/* ============================================
+   CENTRAGE DU KIOSK EN MODE PLEIN ÉCRAN
+   ============================================ */
+
+/* Quand kiosk-view est actif EN MODE ADMIN, cacher sidebar */
+#kiosk-view.admin-mode.active {
+    position: fixed;
+    top: 0;
+    left: 0; /* ✅ Plein écran en mode admin */
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto;
+}
+
+/* Quand kiosk-view est actif EN MODE CLIENT, garder sidebar */
+#kiosk-view.client-mode.active {
+    position: fixed;
+    top: 0;
+    left: 220px; /* ✅ Laisser place à la sidebar */
+    width: calc(100vw - 220px);
+    height: 100vh;
+    z-index: 9999;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto;
+}
+
+/* Cacher la sidebar UNIQUEMENT en mode admin */
+body:has(#kiosk-view.admin-mode.active) .sidebar {
+    display: none !important;
+}
+
+/* Garder la sidebar visible en mode client */
+body:has(#kiosk-view.client-mode.active) .sidebar {
+    display: block !important; /* ✅ CORRECTION */
+}
+
+/* Centrer le container du kiosk */
+#kiosk-view .kiosk-container,
+#kiosk-view.active .kiosk-container {
+    position: relative;
+    max-width: 600px; /* ✅ CORRECTION : Largeur réduite pour vertical */
+    margin: 60px auto 20px auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+}
+
+/* S'assurer que main-content s'adapte selon le mode */
+.main-content:has(#kiosk-view.admin-mode.active) {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+.main-content:has(#kiosk-view.client-mode.active) {
+    margin-left: 220px !important; /* ✅ CORRECTION : Garder décalage */
+    padding: 0 !important;
+    width: calc(100% - 220px) !important;
+}
+
+/* Forcer le kiosk à prendre tout l'écran disponible */
+#kiosk-view.active {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Positionner correctement le bouton retour gérant */
+#kiosk-view.admin-mode #toggle-back-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+/* Positionner correctement le bouton retour client */
+#kiosk-view.client-mode #kiosk-back-btn {
+    position: fixed;
+    top: 20px;
+    left: 240px; /* ✅ CORRECTION : Décaler pour éviter sidebar */
+    z-index: 10000;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+    #kiosk-view.client-mode.active {
+        left: 0;
+        width: 100vw;
+    }
+    
+    body:has(#kiosk-view.client-mode.active) .sidebar {
+        display: none !important;
+    }
+    
+    .main-content:has(#kiosk-view.client-mode.active) {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    #kiosk-view.client-mode #kiosk-back-btn {
+        left: 20px;
+    }
+}
